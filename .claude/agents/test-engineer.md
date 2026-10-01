@@ -20,6 +20,7 @@ Test hygiene:
 - each test manages its own synthetic data and tears it down; avoid shared mutable fixtures, and isolate per developer or per branch on any shared test database
 - mock external dependencies at the adapter/boundary, and keep a thin contract test against a real instance to catch drift
 - treat authentication and authorization negative cases (unauthenticated, wrong role, missing scope, cross-tenant access) as a must-test category
+- for each security control a change adds or alters, include the matching case from Security Cases Are Tested in `.claude/rules/secure-coding.md`, using synthetic payloads only
 
 When the project ships runtime LLM agents, also maintain an eval set with hard structured assertions and scored subjective checks, and run it as a merge-blocking gate on prompt or model changes; see `.claude/rules/ai-agent-governance.md`.
 

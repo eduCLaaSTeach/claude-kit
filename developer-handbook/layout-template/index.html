@@ -229,6 +229,21 @@
             <line x1="10.7" y1="12.3" x2="20" y2="3" />
             <line x1="16" y1="7" x2="19" y2="10" />
         </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+            <rect x="6" y="6" width="12" height="12" rx="2" />
+            <rect x="10" y="10" width="4" height="4" rx="1" />
+            <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" />
+        </symbol>
+        <symbol id="i-coin" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M15 9.5A3 3 0 0 0 12.5 8h-1a2.5 2.5 0 0 0 0 5h1a2.5 2.5 0 0 1 0 5h-1A3 3 0 0 1 9 14.5" />
+            <line x1="12" y1="6" x2="12" y2="8" />
+            <line x1="12" y1="18" x2="12" y2="20" />
+        </symbol>
+        <symbol id="i-copy" viewBox="0 0 24 24">
+            <rect x="9" y="9" width="12" height="12" rx="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+        </symbol>
     </svg>
     <div class="rail-backdrop" id="railBackdrop" aria-hidden="true"></div>
     <div class="app-shell">
@@ -336,6 +351,7 @@
                                     permissions - it is not a real product feature and is not tied to any actual
                                     developer or account.</span></button></div><select class="field" id="roleSelect"
                             style="width:100%" aria-label="Demo: view as role">
+                            <option value="sysadmin">System Admin</option>
                             <option value="admin">Admin</option>
                             <option value="collaborator">Collaborator</option>
                             <option value="contributor">Contributor</option>
@@ -346,12 +362,15 @@
             </div>
         </header>
         <main class="app-main" id="main-content" tabindex="-1">
+
+            <!-- ####################  WORKSPACE  #################### -->
+            <!-- =============================== DASHBOARD =============================== -->
             <section class="view" id="view-dashboard" hidden>
                 <div class="page-head">
                     <div>
                         <h1 class="page-title">Service Overview</h1>
                         <p class="page-sub">Live picture of the IT service desk - Monday, 1 July.</p>
-                    </div><button class="btn btn-primary" type="button" data-nav="ticket-new"><svg class="ic">
+                    </div><button class="btn btn-primary" type="button" data-nav="ticket-form"><svg class="ic">
                             <use href="#i-plus" />
                         </svg> New Ticket</button>
                 </div>
@@ -388,7 +407,7 @@
                 <div class="grid" style="grid-template-columns:2fr 1fr;align-items:start">
                     <div class="card">
                         <div class="card-head">
-                            <h3>Recent tickets</h3><a href="#tickets" class="btn btn-ghost btn-sm">View all <svg
+                            <h3>Recent tickets</h3><a href="#tickets" class="btn btn-secondary btn-sm">View all <svg
                                     class="ic">
                                     <use href="#i-arrow-right" />
                                 </svg></a>
@@ -411,7 +430,7 @@
                         <div class="card card-pad">
                             <h3 style="margin-bottom:10px;font-size:14px">Quick actions</h3>
                             <div class="grid" style="gap:8px"><a class="card card-hover quick-card"
-                                    href="#ticket-new"><span class="icon-chip chip-primary"><svg class="ic">
+                                    href="#ticket-form"><span class="icon-chip chip-primary"><svg class="ic">
                                             <use href="#i-plus" />
                                         </svg></span><span><span class="qt">Log a ticket</span><br><span
                                             class="qs">Create an incident or request</span></span></a><a
@@ -428,12 +447,15 @@
                     </div>
                 </div>
             </section>
+
+            <!-- =============================== TICKETS (LIST / INDEX) =============================== -->
             <section class="view" id="view-tickets" hidden>
+                <nav class="breadcrumb" aria-label="Breadcrumb" data-crumb></nav>
                 <div class="page-head">
                     <div>
                         <h1 class="page-title">All Tickets</h1>
                         <p class="page-sub">Incidents and service requests across your visible scope.</p>
-                    </div><button class="btn btn-primary" type="button" data-nav="ticket-new"><svg class="ic">
+                    </div><button class="btn btn-primary" type="button" data-nav="ticket-form"><svg class="ic">
                             <use href="#i-plus" />
                         </svg> New Ticket</button>
                 </div>
@@ -461,12 +483,22 @@
                                 <option>Low</option>
                             </select></div><button class="btn btn-secondary" id="tkApply" type="button"><svg class="ic">
                                 <use href="#i-filter" />
-                            </svg> Apply</button><button class="btn btn-ghost" id="tkClear" type="button"
+                            </svg> Apply</button><button class="btn btn-secondary" id="tkClear" type="button"
                             hidden>Clear</button>
                         <div style="flex:1"></div>
-                        <div class="filter-field"><label>Demo state</label>
+                        <div class="filter-field"><div class="demo-lbl">Demo state<span
+                                    class="demo-tag">Template only</span><button class="info-btn" type="button"
+                                    aria-label="About the demo state switcher"
+                                    aria-describedby="demoStateTip"><svg class="ic">
+                                        <use href="#i-info" />
+                                    </svg><span class="info-tip" role="tooltip" id="demoStateTip">Demo control
+                                        included in this reference template only. It previews the list's data,
+                                        many-rows, empty, and error states side by side - it is not a real product
+                                        feature. A real app reaches each of these from its own data: rows or no rows,
+                                        a filter that matches nothing, a request that failed.</span></button></div>
                             <div class="segmented" id="tkStateSeg" role="group" aria-label="Demo list state"><button
                                     type="button" data-state="data" class="active">Data</button><button type="button"
+                                    data-state="many">Many</button><button type="button"
                                     data-state="empty">Empty</button><button type="button"
                                     data-state="error">Error</button></div>
                         </div>
@@ -477,28 +509,42 @@
                         <table class="data">
                             <thead>
                                 <tr>
-                                    <th>Ref</th>
-                                    <th>Subject</th>
-                                    <th>Requester</th>
-                                    <th>Priority</th>
-                                    <th>Status</th>
+                                    <th aria-sort="ascending"><button type="button" class="th-sort"
+                                            data-sort="ref">Ref<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th class="col-grow" aria-sort="none"><button type="button" class="th-sort"
+                                            data-sort="subject">Subject<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-sort="req">Requester<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-sort="pr">Priority<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-sort="st">Status<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
                                     <th class="col-actions">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="ticketsBody"></tbody>
                         </table>
                     </div>
-                    <div class="tbl-foot" id="ticketsFoot" hidden><span id="ticketsCount">Showing 6 of 128</span>
-                        <div class="pager"><button class="btn btn-secondary btn-sm" disabled>Prev</button><button
-                                class="btn btn-secondary btn-sm">Next</button></div>
+                    <!-- The count and the pager are both filled by loadTickets from the FILTERED total, so no
+                         unfiltered denominator lives in the markup. Paging comes after the sort and the filter:
+                         the page is a window onto the filtered, sorted set, and changing either returns to page
+                         one. The page buttons render only when the result runs past one page, and the
+                         rows-per-page select only when it runs past the smallest size, so neither is ever a
+                         control that does nothing. Switch the demo state to Many to see a long range collapse. -->
+                    <div class="tbl-foot" id="ticketsFoot" hidden><span id="ticketsCount" role="status"
+                            aria-live="polite"></span>
+                        <div class="pager" id="ticketsPager"></div>
                     </div>
                 </div>
             </section>
-            <section class="view" id="view-ticket" hidden><a class="back-link" href="#tickets"><svg class="ic">
-                        <use href="#i-arrow-left" />
-                    </svg> All Tickets</a>
-                <div class="breadcrumb"><a href="#tickets">Tickets</a><span class="sep">/</span><span class="cur"
-                        id="tkBcRef">INC-1042</span></div>
+
+            <!-- =============================== TICKET (DETAIL / SHOW, RECORD-FACET TABS) =============================== -->
+            <section class="view" id="view-ticket" hidden><nav class="breadcrumb" aria-label="Breadcrumb" data-crumb></nav>
                 <div class="card card-pad" style="margin-bottom:14px">
                     <div class="row-between">
                         <div>
@@ -515,7 +561,10 @@
                         <div style="display:flex;gap:8px"><button class="btn btn-secondary" type="button"
                                 onclick="toast('info','Assignment panel is a mockup stub.')"><svg class="ic">
                                     <use href="#i-user" />
-                                </svg> Assign</button><button class="btn btn-primary" type="button"
+                                </svg> Assign</button><a class="btn btn-secondary" id="tkDetailEdit"
+                                href="#ticket-form/INC-1042"><svg class="ic">
+                                    <use href="#i-pencil" />
+                                </svg> Edit</a><button class="btn btn-primary" type="button"
                                 onclick="toast('success','Ticket marked resolved.')"><svg class="ic">
                                     <use href="#i-check" />
                                 </svg> Resolve</button></div>
@@ -618,9 +667,11 @@
                     </div>
                 </div>
                 <div class="tab-panel" data-panel="settings">
-                    <div class="card card-pad" style="max-width:520px">
-                        <div class="field-group" style="margin-bottom:11px"><label class="lbl">Watchers</label><input
-                                class="field" value="ava.reyes, it-network" /></div>
+                    <div class="card card-pad">
+                        <div class="form-grid cols-3" style="margin-bottom:11px">
+                            <div class="field-group"><label class="lbl" for="tkWatchers">Watchers</label><input
+                                    class="field" id="tkWatchers" value="ava.reyes, it-network" /></div>
+                        </div>
                         <div class="toggle-row" style="margin-bottom:11px"><input type="checkbox" id="tkNotify"
                                 checked /><label for="tkNotify">Notify requester on every update <span
                                     class="help-note">(email + in-app)</span></label></div><button
@@ -631,19 +682,19 @@
                     </div>
                 </div>
             </section>
-            <section class="view" id="view-ticket-new" hidden><a class="back-link" href="#tickets"><svg class="ic">
-                        <use href="#i-arrow-left" />
-                    </svg> All Tickets</a>
+
+            <!-- =============================== TICKET FORM (CREATE / EDIT) =============================== -->
+            <section class="view" id="view-ticket-form" hidden><nav class="breadcrumb" aria-label="Breadcrumb" data-crumb data-parent="tickets"></nav>
                 <div class="page-head">
                     <div>
-                        <h1 class="page-title">New Ticket</h1>
-                        <p class="page-sub">Log an incident or service request.</p>
+                        <h1 class="page-title" id="tkFormTitle">New Ticket</h1>
+                        <p class="page-sub" id="tkFormSub">Log an incident or service request.</p>
                     </div>
                 </div>
+                <!-- No error-summary card. Every message lives under its own field, and a blocked submit is
+                     announced once by an error toast while focus moves to the first invalid field. A card at the
+                     top would repeat the same four sentences and give the user two places to read them. -->
                 <form id="ticketForm" novalidate>
-                    <div class="error-summary" id="formErrSummary" hidden><strong>Please correct the following:</strong>
-                        <ul id="formErrList"></ul>
-                    </div>
                     <div class="card card-pad" style="margin-bottom:12px">
                         <h3 style="font-size:14px;margin-bottom:12px">Details</h3>
                         <div class="form-grid">
@@ -693,14 +744,32 @@
                             data-nav="tickets">Cancel</button><button class="btn btn-primary" type="submit"
                             id="ticketSubmit"><svg class="ic">
                                 <use href="#i-check" />
-                            </svg> Create ticket</button></div>
+                            </svg> <span id="tkFormSubmitLabel">Create ticket</span></button></div>
                 </form>
             </section>
-            <section class="view" id="view-recycle" hidden>
+
+            <!-- =============================== RECYCLE BIN (SOFT DELETE) =============================== -->
+            <section class="view" id="view-recycle" data-list="recycle" data-list-default-sort="deleted" hidden>
+                <nav class="breadcrumb" aria-label="Breadcrumb" data-crumb></nav>
                 <div class="page-head">
                     <div>
                         <h1 class="page-title">Recycle Bin</h1>
                         <p class="page-sub">Soft-deleted tickets. Restore, or (admins) permanently delete.</p>
+                    </div>
+                </div>
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="filter-bar">
+                        <div class="filter-field"><label for="rbSearch">Search</label>
+                            <div class="search-input"><svg class="ic">
+                                    <use href="#i-search" />
+                                </svg><input type="text" id="rbSearch" data-list-search
+                                    placeholder="Ref or subject..." /></div>
+                        </div>
+                        <button class="btn btn-secondary" type="button" data-list-clear
+                            hidden>Clear</button>
+                        <div style="flex:1"></div>
+                        <span class="muted" style="font-size:12px" data-list-count role="status"
+                            aria-live="polite"></span>
                     </div>
                 </div>
                 <div class="card" style="margin-bottom:14px">
@@ -709,11 +778,17 @@
                     </div>
                     <div class="table-wrap">
                         <table class="data">
-                            <thead>
+                                                        <thead>
                                 <tr>
-                                    <th>Ref</th>
-                                    <th>Subject</th>
-                                    <th>Deleted</th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="ref">Ref<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th class="col-grow" aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="subject">Subject<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="deleted">Deleted<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
                                     <th class="col-actions">Actions</th>
                                 </tr>
                             </thead>
@@ -721,24 +796,24 @@
                                 <tr>
                                     <td><span class="code-chip">INC-1001</span></td>
                                     <td>Printer offline - HR wing</td>
-                                    <td class="muted">2 days ago</td>
-                                    <td class="col-actions"><button class="btn btn-ghost btn-sm"
+                                    <td class="muted" data-sort-value="2">2 days ago</td>
+                                    <td class="col-actions"><button class="btn btn-secondary btn-sm"
                                             data-restore="INC-1001"><svg class="ic">
                                                 <use href="#i-restore" />
-                                            </svg> Restore</button><button class="btn btn-ghost btn-sm admin-only"
-                                            data-purge="INC-1001" style="color:var(--badge-danger-fg)"><svg class="ic">
+                                            </svg> Restore</button><button class="btn btn-secondary btn-sm btn-text-danger admin-only"
+                                            data-purge="INC-1001"><svg class="ic">
                                                 <use href="#i-trash" />
                                             </svg> Delete forever</button></td>
                                 </tr>
                                 <tr>
                                     <td><span class="code-chip">REQ-844</span></td>
                                     <td>New laptop request - onboarding</td>
-                                    <td class="muted">5 days ago</td>
-                                    <td class="col-actions"><button class="btn btn-ghost btn-sm"
+                                    <td class="muted" data-sort-value="5">5 days ago</td>
+                                    <td class="col-actions"><button class="btn btn-secondary btn-sm"
                                             data-restore="REQ-844"><svg class="ic">
                                                 <use href="#i-restore" />
-                                            </svg> Restore</button><button class="btn btn-ghost btn-sm admin-only"
-                                            data-purge="REQ-844" style="color:var(--badge-danger-fg)"><svg class="ic">
+                                            </svg> Restore</button><button class="btn btn-secondary btn-sm btn-text-danger admin-only"
+                                            data-purge="REQ-844"><svg class="ic">
                                                 <use href="#i-trash" />
                                             </svg> Delete forever</button></td>
                                 </tr>
@@ -755,17 +830,767 @@
                         </svg> Empty everything</button>
                 </div>
             </section>
-            <section class="view" id="view-integrations" hidden>
-                <div class="breadcrumb"><a href="#dashboard">Administration</a><span
-                        class="sep">/</span><span>Platform</span><span
-                        class="sep">/</span><span>Configuration</span><span
-                        class="sep">/</span><span>Channels</span><span class="sep">/</span><span
-                        class="cur">Integrations</span></div>
+
+            <!-- =============================== STEP-BY-STEP FORM (WIZARD, RESUMABLE DRAFT) =============================== -->
+            <!-- STEP-BY-STEP FORM (wizard). Page-hosted like every other form: its own route inside the shell,
+                 with the breadcrumb, the page header, and the sidebar all still here. Never a modal, at any
+                 length. The pattern it exists to show is the draft: Continue validates the step, SAVES it, and
+                 only then advances, so a closed tab, an expired session, a dropped connection, or a move to
+                 another machine costs nothing already entered. Two footer controls only - Back and Continue -
+                 and on the last step that same Continue becomes the action that commits. -->
+            <section class="view" id="view-onboarding-form" hidden><nav class="breadcrumb" aria-label="Breadcrumb"
+                    data-crumb></nav>
                 <div class="page-head">
                     <div>
-                        <h1 class="page-title">Integrations</h1>
-                        <p class="page-sub">Connect the service desk to external tools. (Depth-overflow page: children
-                            render as tabs, not a 4th sidebar level.)</p>
+                        <h1 class="page-title">New Starter</h1>
+                        <p class="page-sub">Raise an onboarding request across four steps. Each Continue saves
+                            the step before it moves on.</p>
+                    </div>
+                </div>
+                <!-- Re-entering the create flow offers the saved draft instead of opening blank. Discard sits
+                     here, beside Continue, so the form footer keeps its two controls and nothing else. -->
+                <div class="card card-pad" id="obResume" hidden style="margin-bottom:12px">
+                    <div class="card-head" style="margin-bottom:8px">
+                        <h3 style="font-size:14px">You have a saved draft</h3>
+                        <span class="badge badge-neutral"><span class="dot"></span>Draft</span>
+                    </div>
+                    <p class="help-note" id="obResumeNote" style="margin-bottom:12px"></p>
+                    <div class="form-foot" style="margin-top:0"><button
+                            class="btn btn-secondary btn-text-danger" type="button" id="obDiscard"><svg class="ic">
+                                <use href="#i-trash" />
+                            </svg> Discard draft</button><button class="btn btn-primary" type="button"
+                            id="obResumeGo"><svg class="ic">
+                                <use href="#i-arrow-right" />
+                            </svg> Continue</button></div>
+                </div>
+                <div class="card card-pad wiz-demo" id="obDemoRow" style="margin-bottom:12px">
+                    <div class="filter-field">
+                        <div class="demo-lbl">Next draft save<span class="demo-tag">Template only</span><button
+                                class="info-btn" type="button" aria-label="About the demo save switcher"
+                                aria-describedby="obDemoTip"><svg class="ic">
+                                    <use href="#i-info" />
+                                </svg><span class="info-tip" role="tooltip" id="obDemoTip">Demo control included
+                                    in this reference template only. It previews both outcomes of the per-step
+                                    save side by side - it is not a real product feature. A real app gets a
+                                    failure from the network or the server, never from a switch.</span></button>
+                        </div>
+                        <div class="segmented" id="obSaveSeg" role="group" aria-label="Demo save outcome"><button
+                                type="button" data-save="ok" class="active">Succeeds</button><button type="button"
+                                data-save="fail">Fails</button></div>
+                    </div>
+                    <p class="help-note" style="flex:1">Set this to Fails, then press Continue: the step does not
+                        advance, every value stays on screen, and the footer says so. Losing entered work because
+                        a save failed is the defect the draft exists to prevent.</p>
+                </div>
+                <!-- No error-summary card here either. Each message sits under its own field, and a blocked
+                     Continue is announced once by an error toast while focus moves to the first bad field. -->
+                <form id="obForm" novalidate>
+                    <div class="wiz-restored" id="obRestored" hidden>
+                        <p class="help-note" id="obRestoredText"></p><button
+                            class="btn btn-secondary btn-sm btn-text-danger" type="button"
+                            id="obDiscardInline"><svg class="ic">
+                                <use href="#i-trash" />
+                            </svg> Discard draft</button>
+                    </div>
+                    <!-- The step rail is a vertical column on the left; the step on screen and
+                         its two controls fill the column beside it. -->
+                    <div class="wiz-body">
+                        <ol class="wiz-steps" id="obSteps" aria-label="Progress"></ol>
+                        <div class="wiz-main">
+                            <div class="card card-pad wiz-panel" data-step="0" style="margin-bottom:12px">
+                                <h3 style="font-size:14px;margin-bottom:12px">Starter</h3>
+                                <div class="form-grid">
+                                    <div class="field-group" data-field="name"><label class="lbl" for="obName">Full name
+                                            <span class="req">*</span></label><input class="field" id="obName" name="name"
+                                            placeholder="As it should appear in the directory"
+                                            aria-describedby="ob-err-name" />
+                                        <div class="field-err-msg" id="ob-err-name"></div>
+                                    </div>
+                                    <div class="field-group" data-field="email"><label class="lbl" for="obEmail">Work email
+                                            <span class="req">*</span></label><input class="field" id="obEmail"
+                                            name="email" placeholder="name@company.com" aria-describedby="ob-err-email" />
+                                        <div class="field-err-msg" id="ob-err-email"></div>
+                                    </div>
+                                    <div class="field-group" data-field="start"><label class="lbl" for="obStart">Start date
+                                            <span class="req">*</span></label><input class="field" type="date" id="obStart"
+                                            name="start" aria-describedby="ob-err-start" />
+                                        <div class="field-err-msg" id="ob-err-start"></div>
+                                    </div>
+                                    <div class="field-group" data-field="type"><label class="lbl"
+                                            for="obType">Employment type</label><select class="field" id="obType"
+                                            name="type">
+                                            <option>Permanent</option>
+                                            <option>Fixed term</option>
+                                            <option>Contractor</option>
+                                        </select>
+                                        <div class="field-err-msg"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card card-pad wiz-panel" data-step="1" hidden style="margin-bottom:12px">
+                                <h3 style="font-size:14px;margin-bottom:12px">Equipment</h3>
+                                <div class="form-grid">
+                                    <div class="field-group" data-field="laptop"><label class="lbl" for="obLaptop">Laptop
+                                            <span class="req">*</span></label><select class="field" id="obLaptop"
+                                            name="laptop" aria-describedby="ob-err-laptop">
+                                            <option value="">Select a model</option>
+                                            <option>MacBook Pro 14</option>
+                                            <option>ThinkPad T14</option>
+                                            <option>Latitude 5450</option>
+                                        </select>
+                                        <div class="field-err-msg" id="ob-err-laptop"></div>
+                                    </div>
+                                    <div class="field-group" data-field="monitors"><label class="lbl"
+                                            for="obMonitors">Monitors</label><select class="field" id="obMonitors"
+                                            name="monitors">
+                                            <option>1</option>
+                                            <option>2</option>
+                                            <option>None</option>
+                                        </select>
+                                        <div class="field-err-msg"></div>
+                                    </div>
+                                    <div class="field-group col-2" data-field="phone">
+                                        <div class="toggle-row"><input type="checkbox" id="obPhone" name="phone" /><label
+                                                class="lbl" for="obPhone" style="font-weight:400">Issue a work phone as
+                                                well</label></div>
+                                        <div class="field-err-msg"></div>
+                                    </div>
+                                    <div class="field-group col-2" data-field="kit"><label class="lbl"
+                                            for="obKit">Accessories</label><textarea class="field" id="obKit" name="kit"
+                                            placeholder="Dock, headset, keyboard, anything unusual..."></textarea>
+                                        <div class="field-err-msg"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card card-pad wiz-panel" data-step="2" hidden style="margin-bottom:12px">
+                                <h3 style="font-size:14px;margin-bottom:12px">Access</h3>
+                                <div class="form-grid">
+                                    <div class="field-group" data-field="manager"><label class="lbl"
+                                            for="obManager">Reporting manager <span class="req">*</span></label><input
+                                            class="field" id="obManager" name="manager" placeholder="Who approves their access"
+                                            aria-describedby="ob-err-manager" />
+                                        <div class="field-err-msg" id="ob-err-manager"></div>
+                                    </div>
+                                    <div class="field-group" data-field="cost"><label class="lbl" for="obCost">Cost
+                                            centre</label><input class="field" id="obCost" name="cost"
+                                            placeholder="e.g. OPS-204" />
+                                        <div class="field-err-msg"></div>
+                                    </div>
+                                    <div class="field-group" data-field="template"><label class="lbl"
+                                            for="obTemplate">Access template</label><select class="field" id="obTemplate"
+                                            name="template">
+                                            <option>Standard</option>
+                                            <option>Engineering</option>
+                                            <option>Finance</option>
+                                            <option>Support desk</option>
+                                        </select>
+                                        <div class="field-err-msg"></div>
+                                    </div>
+                                    <div class="field-group col-2" data-field="notes"><label class="lbl" for="obNotes">Notes
+                                            for the access review</label><textarea class="field" id="obNotes"
+                                            name="notes"
+                                            placeholder="Anything the approver needs to know..."></textarea>
+                                        <div class="field-err-msg"></div>
+                                    </div>
+                                </div>
+                                <p class="help-note" style="margin-top:10px">Credentials are never part of this request,
+                                    and never part of the saved draft. Accounts are issued after approval.</p>
+                            </div>
+                            <div class="card card-pad wiz-panel" data-step="3" hidden style="margin-bottom:12px">
+                                <h3 style="font-size:14px;margin-bottom:12px">Review</h3>
+                                <dl class="wiz-review" id="obReview"></dl>
+                                <p class="help-note" style="margin-top:12px">Submitting commits the request and closes the
+                                    draft in the same step, so the finished record appears once and the draft leaves the
+                                    drafts surface.</p>
+                            </div>
+                            <!-- Two controls, and the draft line. Back is hidden on step one; Continue becomes the
+                                 committing action on the last step - the same button with a new label, never a third. -->
+                            <div class="form-foot wiz-foot">
+                                <p class="draft-state" id="obDraftState" role="status" aria-live="polite"></p>
+                                <div class="wiz-foot-actions"><button class="btn btn-secondary" type="button"
+                                        id="obBack" hidden><svg class="ic">
+                                            <use href="#i-arrow-left" />
+                                        </svg> Back</button><button class="btn btn-primary" type="button"
+                                        id="obNext"><svg class="ic">
+                                            <use href="#i-arrow-right" />
+                                        </svg> <span id="obNextLabel">Continue</span></button></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- =============================== ASSETS (LIST / INDEX) =============================== -->
+            <section class="view" id="view-assets" data-list="assets" data-list-default-sort="tag" hidden>
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title">Assets</h1>
+                        <p class="page-sub">Configuration items tracked in the CMDB.</p>
+                    </div><button class="btn btn-primary" onclick="toast('info','Asset editor is a mockup stub.')"><svg
+                            class="ic">
+                            <use href="#i-plus" />
+                        </svg> Add asset</button>
+                </div>
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="filter-bar">
+                        <div class="filter-field"><label for="asSearch">Search</label>
+                            <div class="search-input"><svg class="ic">
+                                    <use href="#i-search" />
+                                </svg><input type="text" id="asSearch" data-list-search
+                                    placeholder="Tag or name..." /></div>
+                        </div>
+                        <div class="filter-field"><label for="asType">Type</label><select class="field"
+                                id="asType" data-list-facet="type" data-list-col="2">
+                                <option value="">All types</option>
+                                <option>Network</option>
+                                <option>Endpoint</option>
+                                <option>Server</option>
+                            </select>
+                        </div>
+                        <div class="filter-field"><label for="asStatus">Status</label><select class="field"
+                                id="asStatus" data-list-facet="status" data-list-col="3">
+                                <option value="">All statuses</option>
+                                <option>In service</option>
+                                <option>Maintenance</option>
+                                <option>Retired</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" type="button" data-list-clear
+                            hidden>Clear</button>
+                        <div style="flex:1"></div>
+                        <span class="muted" style="font-size:12px" data-list-count role="status"
+                            aria-live="polite"></span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="table-wrap">
+                        <table class="data">
+                                                        <thead>
+                                <tr>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="tag">Tag<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th class="col-grow" aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="name">Name<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="type">Type<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="status">Status<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="code-chip">SRV-014</span></td>
+                                    <td class="row-link">core-switch-fl4</td>
+                                    <td>Network</td>
+                                    <td><span class="badge badge-warning"><span class="dot"></span>Maintenance</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="code-chip">LAP-238</span></td>
+                                    <td class="row-link">MBP-14 (P. Nair)</td>
+                                    <td>Endpoint</td>
+                                    <td><span class="badge badge-success"><span class="dot"></span>In service</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="code-chip">SRV-002</span></td>
+                                    <td class="row-link">vpn-gateway-01</td>
+                                    <td>Server</td>
+                                    <td><span class="badge badge-success"><span class="dot"></span>In service</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ####################  COMPLIANCE  #################### -->
+            <!-- =============================== SLA MONITOR (LIST / INDEX) =============================== -->
+            <section class="view" id="view-sla" data-list="sla" data-list-default-sort="breach" hidden>
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title">SLA Monitor</h1>
+                        <p class="page-sub">Tickets approaching or breaching their service-level target.</p>
+                    </div>
+                </div>
+                <div class="grid metrics" style="margin-bottom:14px">
+                    <div class="metric">
+                        <div class="metric-top"><span class="metric-lbl">Within SLA</span><span
+                                class="icon-chip chip-success"><svg class="ic">
+                                    <use href="#i-check-circle" />
+                                </svg></span></div>
+                        <div class="metric-num">94%</div><span class="metric-delta up">target 90%</span>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-top"><span class="metric-lbl">At risk (&lt;1h)</span><span
+                                class="icon-chip chip-warning"><svg class="ic">
+                                    <use href="#i-clock" />
+                                </svg></span></div>
+                        <div class="metric-num">7</div><span class="metric-delta">monitor closely</span>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-top"><span class="metric-lbl">Breached (24h)</span><span
+                                class="icon-chip chip-danger"><svg class="ic">
+                                    <use href="#i-warning" />
+                                </svg></span></div>
+                        <div class="metric-num">2</div><span class="metric-delta down">review needed</span>
+                    </div>
+                </div>
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="filter-bar">
+                        <div class="filter-field"><label for="slSearch">Search</label>
+                            <div class="search-input"><svg class="ic">
+                                    <use href="#i-search" />
+                                </svg><input type="text" id="slSearch" data-list-search
+                                    placeholder="Ref or subject..." /></div>
+                        </div>
+                        <div class="filter-field"><label for="slPriority">Priority</label><select class="field"
+                                id="slPriority" data-list-facet="priority" data-list-col="2">
+                                <option value="">All priorities</option>
+                                <option>Critical</option>
+                                <option>High</option>
+                                <option>Medium</option>
+                                <option>Low</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" type="button" data-list-clear
+                            hidden>Clear</button>
+                        <div style="flex:1"></div>
+                        <span class="muted" style="font-size:12px" data-list-count role="status"
+                            aria-live="polite"></span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-head">
+                        <h3>At risk now</h3>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data">
+                                                        <thead>
+                                <tr>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="ref">Ref<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th class="col-grow" aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="subject">Subject<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="priority">Priority<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="breach">Breaches in<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="code-chip">INC-1042</span></td>
+                                    <td><a class="row-link" href="#ticket/INC-1042/overview">VPN drops on 4th floor</a>
+                                    </td>
+                                    <td>High</td>
+                                    <td style="color:var(--badge-danger-fg);font-weight:600">41m</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="code-chip">INC-1050</span></td>
+                                    <td class="row-link">Email delivery delayed</td>
+                                    <td>Medium</td>
+                                    <td style="color:var(--badge-warning-fg);font-weight:600">58m</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ####################  APPLICATION ADMINISTRATION  #################### -->
+            <!-- =============================== USERS (LIST / INDEX) =============================== -->
+            <section class="view" id="view-users" data-list="users" data-list-default-sort="name" hidden>
+                <nav class="breadcrumb" aria-label="Breadcrumb" data-crumb></nav>
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title">Users</h1>
+                        <p class="page-sub">People with access to the service desk.</p>
+                    </div><button class="btn btn-primary" onclick="toast('info','Invite flow is a mockup stub.')"><svg
+                            class="ic">
+                            <use href="#i-plus" />
+                        </svg> Invite user</button>
+                </div>
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="filter-bar">
+                        <div class="filter-field"><label for="usSearch">Search</label>
+                            <div class="search-input"><svg class="ic">
+                                    <use href="#i-search" />
+                                </svg><input type="text" id="usSearch" data-list-search
+                                    placeholder="Name or email..." /></div>
+                        </div>
+                        <div class="filter-field"><label for="usRole">Role</label><select class="field"
+                                id="usRole" data-list-facet="role" data-list-col="2">
+                                <option value="">All roles</option>
+                                <option>System Admin</option>
+                                <option>Admin</option>
+                                <option>Collaborator</option>
+                                <option>Contributor</option>
+                                <option>Read-only</option>
+                            </select>
+                        </div>
+                        <div class="filter-field"><label for="usStatus">Status</label><select class="field"
+                                id="usStatus" data-list-facet="status" data-list-col="3">
+                                <option value="">All statuses</option>
+                                <option>Active</option>
+                                <option>Invited</option>
+                                <option>Suspended</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" type="button" data-list-clear
+                            hidden>Clear</button>
+                        <div style="flex:1"></div>
+                        <span class="muted" style="font-size:12px" data-list-count role="status"
+                            aria-live="polite"></span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="table-wrap">
+                        <table class="data">
+                                                        <thead>
+                                <tr>
+                                    <th class="col-grow" aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="name">Name<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="email">Email<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="role">Role<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="status">Status<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th class="col-actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="row-link">Ava Reyes</td>
+                                    <td class="muted">ava.reyes@claas2saas.com</td>
+                                    <td data-sort-value="2"><span class="badge badge-violet">Admin</span></td>
+                                    <td><span class="badge badge-success"><span class="dot"></span>Active</span></td>
+                                    <td class="col-actions"><button class="btn btn-secondary btn-sm"><svg class="ic">
+                                                <use href="#i-pencil" />
+                                            </svg> Edit</button><a class="btn btn-secondary btn-sm"
+                                            href="#roles"><svg class="ic">
+                                                <use href="#i-shield" />
+                                            </svg> Edit roles</a></td>
+                                </tr>
+                                <tr>
+                                    <td class="row-link">Liam Chen</td>
+                                    <td class="muted">liam.chen@claas2saas.com</td>
+                                    <td data-sort-value="3"><span class="badge badge-info">Collaborator</span></td>
+                                    <td><span class="badge badge-success"><span class="dot"></span>Active</span></td>
+                                    <td class="col-actions"><button class="btn btn-secondary btn-sm"><svg class="ic">
+                                                <use href="#i-pencil" />
+                                            </svg> Edit</button><a class="btn btn-secondary btn-sm"
+                                            href="#roles"><svg class="ic">
+                                                <use href="#i-shield" />
+                                            </svg> Edit roles</a></td>
+                                </tr>
+                                <tr>
+                                    <td class="row-link">Priya Nair</td>
+                                    <td class="muted">priya.nair@claas2saas.com</td>
+                                    <td data-sort-value="4"><span class="badge badge-neutral">Contributor</span></td>
+                                    <td><span class="badge badge-warning"><span class="dot"></span>Invited</span></td>
+                                    <td class="col-actions"><button class="btn btn-secondary btn-sm"><svg class="ic">
+                                                <use href="#i-pencil" />
+                                            </svg> Edit</button><a class="btn btn-secondary btn-sm"
+                                            href="#roles"><svg class="ic">
+                                                <use href="#i-shield" />
+                                            </svg> Edit roles</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =============================== ROLES (LIST / INDEX) =============================== -->
+            <section class="view" id="view-roles" data-list="roles" data-list-default-sort="tier" hidden>
+                <nav class="breadcrumb" aria-label="Breadcrumb" data-crumb></nav>
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title">Roles</h1>
+                        <p class="page-sub">Authorization is this application's own. A role is a named set of
+                            feature grants. Default sort: tier, highest first.</p>
+                    </div><a class="btn btn-primary" href="#role-edit"><svg class="ic">
+                            <use href="#i-plus" />
+                        </svg> New role</a>
+                </div>
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="filter-bar">
+                        <div class="filter-field"><label for="rlSearch">Search</label>
+                            <div class="search-input"><svg class="ic">
+                                    <use href="#i-search" />
+                                </svg><input type="text" id="rlSearch" data-list-search
+                                    placeholder="Name or code..." /></div>
+                        </div>
+                        <div class="filter-field"><label for="rlTier">Tier</label><select class="field" id="rlTier"
+                                data-list-facet="tier" data-list-col="2">
+                                <option value="">All tiers</option>
+                                <option>System admin</option>
+                                <option>Admin</option>
+                                <option>Collaborator</option>
+                                <option>Contributor</option>
+                                <option>Read-only</option>
+                            </select>
+                        </div>
+                        <div class="filter-field"><label for="rlStatus">Status</label><select class="field"
+                                id="rlStatus" data-list-facet="status" data-list-col="5">
+                                <option value="">All statuses</option>
+                                <option>Active</option>
+                                <option>Retired</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" type="button" data-list-clear hidden>Clear</button>
+                        <div style="flex:1"></div>
+                        <span class="muted" style="font-size:12px" data-list-count role="status"
+                            aria-live="polite"></span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="table-wrap">
+                        <table class="data">
+                            <thead>
+                                <tr>
+                                    <th class="col-grow" aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="name">Name<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="code">Code<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="tier">Tier<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="grants">Features granted<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="users">Users<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="status">Status<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th class="col-actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-role-code="SYSADMIN">
+                                    <td class="row-link">System Administrator</td>
+                                    <td class="muted">SYSADMIN</td>
+                                    <td data-sort-value="1"><span class="badge badge-danger">System admin</span></td>
+                                    <td data-grant-count>33 of 33</td>
+                                    <td>1</td>
+                                    <td><span class="badge badge-success"><span class="dot"></span>Active</span></td>
+                                    <td class="col-actions"><a class="btn btn-secondary btn-sm"
+                                            href="#role-edit/SYSADMIN"><svg class="ic">
+                                                <use href="#i-pencil" />
+                                            </svg> Edit</a><button class="btn btn-secondary btn-sm" type="button"
+                                            onclick="toast('info','Duplicating a role copies its grants, which is how most new roles start.')"><svg
+                                                class="ic">
+                                                <use href="#i-copy" />
+                                            </svg> Duplicate</button><button class="btn btn-secondary btn-sm btn-text-danger"
+                                            type="button"
+                                            onclick="toast('warning','1 users hold this role. Move them before deleting it.')"><svg
+                                                class="ic">
+                                                <use href="#i-trash" />
+                                            </svg> Delete</button></td>
+                                </tr>
+                                <tr data-role-code="ADMIN">
+                                    <td class="row-link">Administrator</td>
+                                    <td class="muted">ADMIN</td>
+                                    <td data-sort-value="2"><span class="badge badge-violet">Admin</span></td>
+                                    <td data-grant-count>25 of 33</td>
+                                    <td>3</td>
+                                    <td><span class="badge badge-success"><span class="dot"></span>Active</span></td>
+                                    <td class="col-actions"><a class="btn btn-secondary btn-sm"
+                                            href="#role-edit/ADMIN"><svg class="ic">
+                                                <use href="#i-pencil" />
+                                            </svg> Edit</a><button class="btn btn-secondary btn-sm" type="button"
+                                            onclick="toast('info','Duplicating a role copies its grants, which is how most new roles start.')"><svg
+                                                class="ic">
+                                                <use href="#i-copy" />
+                                            </svg> Duplicate</button><button class="btn btn-secondary btn-sm btn-text-danger"
+                                            type="button"
+                                            onclick="toast('warning','3 users hold this role. Move them before deleting it.')"><svg
+                                                class="ic">
+                                                <use href="#i-trash" />
+                                            </svg> Delete</button></td>
+                                </tr>
+                                <tr data-role-code="COLLAB">
+                                    <td class="row-link">Collaborator</td>
+                                    <td class="muted">COLLAB</td>
+                                    <td data-sort-value="3"><span class="badge badge-info">Collaborator</span></td>
+                                    <td data-grant-count>16 of 33</td>
+                                    <td>8</td>
+                                    <td><span class="badge badge-success"><span class="dot"></span>Active</span></td>
+                                    <td class="col-actions"><a class="btn btn-secondary btn-sm"
+                                            href="#role-edit/COLLAB"><svg class="ic">
+                                                <use href="#i-pencil" />
+                                            </svg> Edit</a><button class="btn btn-secondary btn-sm" type="button"
+                                            onclick="toast('info','Duplicating a role copies its grants, which is how most new roles start.')"><svg
+                                                class="ic">
+                                                <use href="#i-copy" />
+                                            </svg> Duplicate</button><button class="btn btn-secondary btn-sm btn-text-danger"
+                                            type="button"
+                                            onclick="toast('warning','8 users hold this role. Move them before deleting it.')"><svg
+                                                class="ic">
+                                                <use href="#i-trash" />
+                                            </svg> Delete</button></td>
+                                </tr>
+                                <tr data-role-code="CONTRIB">
+                                    <td class="row-link">Contributor</td>
+                                    <td class="muted">CONTRIB</td>
+                                    <td data-sort-value="4"><span class="badge badge-success">Contributor</span></td>
+                                    <td data-grant-count>7 of 33</td>
+                                    <td>6</td>
+                                    <td><span class="badge badge-success"><span class="dot"></span>Active</span></td>
+                                    <td class="col-actions"><a class="btn btn-secondary btn-sm"
+                                            href="#role-edit/CONTRIB"><svg class="ic">
+                                                <use href="#i-pencil" />
+                                            </svg> Edit</a><button class="btn btn-secondary btn-sm" type="button"
+                                            onclick="toast('info','Duplicating a role copies its grants, which is how most new roles start.')"><svg
+                                                class="ic">
+                                                <use href="#i-copy" />
+                                            </svg> Duplicate</button><button class="btn btn-secondary btn-sm btn-text-danger"
+                                            type="button"
+                                            onclick="toast('warning','6 users hold this role. Move them before deleting it.')"><svg
+                                                class="ic">
+                                                <use href="#i-trash" />
+                                            </svg> Delete</button></td>
+                                </tr>
+                                <tr data-role-code="VIEWER">
+                                    <td class="row-link">Viewer</td>
+                                    <td class="muted">VIEWER</td>
+                                    <td data-sort-value="5"><span class="badge badge-neutral">Read-only</span></td>
+                                    <td data-grant-count>4 of 33</td>
+                                    <td>11</td>
+                                    <td><span class="badge badge-success"><span class="dot"></span>Active</span></td>
+                                    <td class="col-actions"><a class="btn btn-secondary btn-sm"
+                                            href="#role-edit/VIEWER"><svg class="ic">
+                                                <use href="#i-pencil" />
+                                            </svg> Edit</a><button class="btn btn-secondary btn-sm" type="button"
+                                            onclick="toast('info','Duplicating a role copies its grants, which is how most new roles start.')"><svg
+                                                class="ic">
+                                                <use href="#i-copy" />
+                                            </svg> Duplicate</button><button class="btn btn-secondary btn-sm btn-text-danger"
+                                            type="button"
+                                            onclick="toast('warning','11 users hold this role. Move them before deleting it.')"><svg
+                                                class="ic">
+                                                <use href="#i-trash" />
+                                            </svg> Delete</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =============================== ROLE EDIT (FORM + FEATURE GRANT MATRIX) =============================== -->
+            <section class="view" id="view-role-edit" hidden>
+                <nav class="breadcrumb" aria-label="Breadcrumb" data-crumb></nav>
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title" id="rlEditTitle">Edit role</h1>
+                        <p class="page-sub" id="rlEditSub">Grants take effect on each affected user's next request.</p>
+                    </div>
+                </div>
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="card-head">
+                        <h3>Identity</h3>
+                    </div>
+                    <div class="form-grid">
+                        <div class="field-group"><label class="lbl" for="rlName">Role name</label><input class="field"
+                                id="rlName" value="Administrator" /></div>
+                        <div class="field-group"><label class="lbl" for="rlCode">Code</label><input class="field"
+                                id="rlCode" value="ADMIN" disabled /><span class="help-note">Immutable once grants
+                                point at it.</span></div>
+                    </div>
+                    <div class="form-grid" style="margin-top:11px">
+                        <div class="field-group"><label class="lbl" for="rlTierSel">Tier</label><select class="field"
+                                id="rlTierSel">
+                                <option>System admin</option>
+                                <option selected>Admin</option>
+                                <option>Collaborator</option>
+                                <option>Contributor</option>
+                                <option>Read-only</option>
+                            </select>
+                            <div class="help-note" id="rlScope">Record scope: all records, and the tier that
+                                permanently deletes application records.</div>
+                            <div class="help-note" id="rlTierNote" hidden>This role sits above your own tier, so its
+                                tier is shown as it really is and cannot be changed here. It is kept exactly as it is
+                                when you save.</div>
+                        </div>
+                        <div class="field-group"><label class="lbl" for="rlDesc">Description</label><input
+                                class="field" id="rlDesc" value="Everything inside the application" /></div>
+                    </div>
+                    <div class="toggle-row" style="margin-top:12px"><input type="checkbox" id="rlActive" checked />
+                        <label for="rlActive">Active</label>
+                    </div>
+                </div>
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="card-head">
+                        <h3>Feature grants</h3><span class="badge badge-info" id="grantCount">0 of 0 granted</span>
+                    </div>
+                    <p class="muted" style="margin-bottom:12px">Every feature the sidebar can show has a row.
+                        <code>view</code> is the base: any other action implies it, and clearing it clears the row. A
+                        dash is an action the feature does not expose, which is not the same as an unticked box. A
+                        greyed box is a third answer again: granted or not, but outside your own authority to change,
+                        so it is shown as it really is and merged back in when you save. Administering access is not
+                        awarding it.</p>
+                    <div class="table-wrap">
+                        <table class="data grant-matrix" id="grantMatrix">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th class="grant-col"><button type="button" class="th-sort grant-all-col"
+                                            data-col-action="view">view</button></th>
+                                    <th class="grant-col"><button type="button" class="th-sort grant-all-col"
+                                            data-col-action="create">create</button></th>
+                                    <th class="grant-col"><button type="button" class="th-sort grant-all-col"
+                                            data-col-action="edit">edit</button></th>
+                                    <th class="grant-col"><button type="button" class="th-sort grant-all-col"
+                                            data-col-action="delete">delete</button></th>
+                                    <th class="grant-col"><button type="button" class="th-sort grant-all-col"
+                                            data-col-action="export">export</button></th>
+                                    <th class="grant-col"><button type="button" class="th-sort grant-all-col"
+                                            data-col-action="approve">approve</button></th>
+                                    <th class="col-actions">Row</th>
+                                </tr>
+                            </thead>
+                            <tbody id="grantBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-foot"><a class="btn btn-secondary" href="#roles"><svg class="ic">
+                            <use href="#i-arrow-left" />
+                        </svg> Cancel</a><button class="btn btn-primary" type="button"
+                        onclick="toast('success','Role saved. Grants outside your authority were kept as they were. It applies on each affected user&#39;s next request.')"><svg
+                            class="ic">
+                            <use href="#i-check" />
+                        </svg> Save</button></div>
+            </section>
+
+            <!-- ####################  SYSTEM ADMINISTRATION  #################### -->
+            <!-- =============================== CONNECTIONS (RECORD-FACET TABS) =============================== -->
+            <section class="view" id="view-integrations" hidden>
+                <nav class="breadcrumb" aria-label="Breadcrumb" data-crumb></nav>
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title">Connections</h1>
+                        <p class="page-sub">External tools connected to the service desk. The tab strip here shows the
+                            facet use: one page, several views of it.</p>
                     </div>
                 </div>
                 <nav class="tabstrip" id="intgTabs" aria-label="Integration sections"><a class="tab"
@@ -778,15 +1603,53 @@
                             class="ic">
                             <use href="#i-zap" />
                         </svg> Webhooks</a></nav>
-                <div class="tab-panel" data-panel="connected">
+                <div class="tab-panel" data-panel="connected" data-list="integrations"
+                    data-list-default-sort="name">
+                    <div class="card card-pad" style="margin-bottom:12px">
+                        <div class="filter-bar">
+                            <div class="filter-field"><label for="igSearch">Search</label>
+                                <div class="search-input"><svg class="ic">
+                                        <use href="#i-search" />
+                                    </svg><input type="text" id="igSearch" data-list-search
+                                        placeholder="Integration or type..." /></div>
+                            </div>
+                            <div class="filter-field"><label for="igType">Type</label><select class="field"
+                                    id="igType" data-list-facet="type" data-list-col="1">
+                                    <option value="">All types</option>
+                                    <option>Chat</option>
+                                    <option>Issue sync</option>
+                                    <option>Monitoring</option>
+                                </select>
+                            </div>
+                            <div class="filter-field"><label for="igHealth">Health</label><select class="field"
+                                    id="igHealth" data-list-facet="health" data-list-col="2">
+                                    <option value="">All health</option>
+                                    <option>Healthy</option>
+                                    <option>Degraded</option>
+                                    <option>Failed</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-secondary" type="button" data-list-clear
+                                hidden>Clear</button>
+                            <div style="flex:1"></div>
+                            <span class="muted" style="font-size:12px" data-list-count role="status"
+                                aria-live="polite"></span>
+                        </div>
+                    </div>
                     <div class="card">
                         <div class="table-wrap">
                             <table class="data">
-                                <thead>
+                                                                <thead>
                                     <tr>
-                                        <th>Integration</th>
-                                        <th>Type</th>
-                                        <th>Health</th>
+                                        <th class="col-grow" aria-sort="none"><button type="button" class="th-sort"
+                                                data-list-sort="name">Integration<span class="sort-caret"
+                                                    aria-hidden="true"></span></button></th>
+                                        <th aria-sort="none"><button type="button" class="th-sort"
+                                                data-list-sort="type">Type<span class="sort-caret"
+                                                    aria-hidden="true"></span></button></th>
+                                        <th aria-sort="none"><button type="button" class="th-sort"
+                                                data-list-sort="health">Health<span class="sort-caret"
+                                                    aria-hidden="true"></span></button></th>
                                         <th class="col-actions">Actions</th>
                                     </tr>
                                 </thead>
@@ -797,7 +1660,7 @@
                                         <td><span class="badge badge-success"><span
                                                     class="dot"></span>Healthy</span><span class="muted"
                                                 style="font-size:11px">· 2m ago</span></td>
-                                        <td class="col-actions"><button class="btn btn-ghost btn-sm"
+                                        <td class="col-actions"><button class="btn btn-secondary btn-sm"
                                                 onclick="toast('info','Testing Slack connection...')">Test</button></td>
                                     </tr>
                                     <tr>
@@ -806,7 +1669,7 @@
                                         <td><span class="badge badge-warning"><span
                                                     class="dot"></span>Degraded</span><span class="muted"
                                                 style="font-size:11px">· 14m ago</span></td>
-                                        <td class="col-actions"><button class="btn btn-ghost btn-sm"
+                                        <td class="col-actions"><button class="btn btn-secondary btn-sm"
                                                 onclick="toast('info','Testing Jira connection...')">Test</button></td>
                                     </tr>
                                 </tbody>
@@ -863,216 +1726,548 @@
                     </div>
                 </div>
             </section>
-            <section class="view" id="view-users" hidden>
-                <div class="breadcrumb"><a href="#dashboard">Administration</a><span class="sep">/</span><span>Access
-                        Control</span><span class="sep">/</span><span class="cur">Users</span></div>
+
+            <!-- =============================== AI PROVIDERS (LIST / INDEX) =============================== -->
+            <section class="view" id="view-models" hidden>
+                <nav class="breadcrumb" aria-label="Breadcrumb" data-crumb></nav>
                 <div class="page-head">
                     <div>
-                        <h1 class="page-title">Users</h1>
-                        <p class="page-sub">People with access to the service desk.</p>
-                    </div><button class="btn btn-primary" onclick="toast('info','Invite flow is a mockup stub.')"><svg
-                            class="ic">
+                        <h1 class="page-title">AI Providers</h1>
+                        <p class="page-sub">One record per model. Adding or changing a model is configuration, never
+                            code.</p>
+                    </div><button class="btn btn-primary" type="button" data-nav="model-edit"><svg class="ic">
                             <use href="#i-plus" />
-                        </svg> Invite user</button>
+                        </svg> Add model</button>
+                </div>
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="filter-bar">
+                        <div class="filter-field"><label for="mdSearch">Search</label>
+                            <div class="search-input"><svg class="ic">
+                                    <use href="#i-search" />
+                                </svg><input type="text" id="mdSearch"
+                                    placeholder="Search by name or endpoint..." /></div>
+                        </div>
+                        <div class="filter-field"><label for="mdStatus">Status</label><select class="field"
+                                id="mdStatus">
+                                <option value="">All statuses</option>
+                                <option>Active</option>
+                                <option>Draft</option>
+                                <option>Retired</option>
+                            </select></div>
+                        <div class="filter-field"><label for="mdTested">Last test</label><select class="field"
+                                id="mdTested">
+                                <option value="">Any result</option>
+                                <option value="passed">Passed</option>
+                                <option value="failed">Failed</option>
+                                <option value="never">Never tested</option>
+                            </select></div><button class="btn btn-secondary" id="mdApply" type="button"><svg class="ic">
+                                <use href="#i-filter" />
+                            </svg> Apply</button><button class="btn btn-secondary" id="mdClear" type="button"
+                            hidden>Clear</button>
+                        <div style="flex:1"></div>
+                        <div class="filter-field"><div class="demo-lbl">Demo state<span
+                                    class="demo-tag">Template only</span><button class="info-btn" type="button"
+                                    aria-label="About the demo state switcher"
+                                    aria-describedby="demoStateTipMd"><svg class="ic">
+                                        <use href="#i-info" />
+                                    </svg><span class="info-tip" role="tooltip" id="demoStateTipMd">Demo control
+                                        included in this reference template only. It previews the list's data, empty,
+                                        and error states side by side - it is not a real product feature. A real app
+                                        reaches each of these from its own data: rows or no rows, a filter that
+                                        matches nothing, a request that failed.</span></button></div>
+                            <div class="segmented" id="mdStateSeg" role="group" aria-label="Demo list state"><button
+                                    type="button" data-state="data" class="active">Data</button><button type="button"
+                                    data-state="empty">Empty</button><button type="button"
+                                    data-state="error">Error</button></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="card">
                     <div class="table-wrap">
                         <table class="data">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
+                                    <th aria-sort="ascending"><button type="button" class="th-sort"
+                                            data-sort="name">Name<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-sort="method">Method<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th class="col-grow" aria-sort="none"><button type="button" class="th-sort"
+                                            data-sort="url">Endpoint<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-sort="priceIn">Cost in / out<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-sort="status">Status<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-sort="tested">Last tested<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th class="col-actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modelsBody"></tbody>
+                        </table>
+                    </div>
+                    <!-- No pager: four rows is one page, and page controls render only past one page. The Tickets
+                         list carries the working pager, including its Many demo state. -->
+                    <div class="tbl-foot" id="modelsFoot" hidden><span id="modelsCount" role="status"
+                            aria-live="polite"></span></div>
+                </div>
+                <div class="card card-pad" style="margin-top:12px">
+                    <div class="gate-note"><svg class="ic" style="color:var(--badge-info-fg)">
+                            <use href="#i-info" />
+                        </svg>
+                        <div>Cost reads <strong>Unknown</strong> when a price is unset, never zero, because zero claims
+                            the call was free. An entry that has never passed a test call is not callable, so calling
+                            code asking for it gets a handled failure rather than a request.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =============================== AI PROVIDER FORM (TEST BEFORE SAVE) =============================== -->
+            <section class="view" id="view-model-edit" hidden><nav class="breadcrumb" aria-label="Breadcrumb" data-crumb></nav>
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title" id="mdEditTitle">Add model</h1>
+                        <p class="page-sub">One shared template for create and edit, keyed on whether the record exists.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="sect-head"><span class="sect-num">1</span>Identity</div>
+                    <div class="form-grid cols-3">
+                        <div class="field-group"><label class="lbl" for="mName">Name</label><input class="field"
+                                id="mName" data-tested-field placeholder="OpenAI GPT-5.6" /></div>
+                        <div class="field-group"><label class="lbl" for="mApiKey">API key</label><input class="field"
+                                id="mApiKey" type="password" data-tested-field placeholder="The model's API key"
+                                autocomplete="new-password" />
+                            <div class="help-note">Masked, never shown again after saving, referenced as
+                                <span class="mono">{{api_key}}</span>.
+                            </div>
+                        </div>
+                        <div class="field-group"><label class="lbl" for="mStatus">Status</label><select class="field"
+                                id="mStatus">
+                                <option>Draft</option>
+                                <option>Active</option>
+                                <option>Retired</option>
+                            </select></div>
+                    </div>
+                </div>
+
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="sect-head"><span class="sect-num">2</span>Endpoint</div>
+                    <div class="form-grid">
+                        <div class="field-group"><label class="lbl" for="mMethod">Method</label><select class="field"
+                                id="mMethod" data-tested-field>
+                                <option>POST</option>
+                                <option>GET</option>
+                            </select></div>
+                        <div class="field-group"><label class="lbl" for="mUrl">URL</label><input class="field mono"
+                                id="mUrl" data-tested-field
+                                placeholder="https://&lt;PROVIDER_HOST&gt;/v1/&lt;PATH&gt;" /></div>
+                    </div>
+                </div>
+
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="sect-head"><span class="sect-num">3</span>Headers</div>
+                    <div class="rep cols-2" id="hdrRep">
+                        <div class="rep-legend">
+                            <div>Name</div>
+                            <div>Value</div>
+                            <div></div>
+                        </div>
+                        <div class="rep-rows" id="hdrRows"></div>
+                        <div class="rep-foot"><button class="btn btn-secondary btn-sm" type="button" id="hdrAdd"><svg
+                                    class="ic">
+                                    <use href="#i-plus" />
+                                </svg> Add row</button></div>
+                    </div>
+                    <div class="help-note" style="margin-top:8px">Write <span class="mono">{{api_key}}</span> where the
+                        API key goes and the engine fills it in at call time. A header value containing a line break is
+                        rejected before the call leaves the process.</div>
+                </div>
+
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="sect-head"><span class="sect-num">4</span>Body</div>
+                    <div class="rep cols-3" id="bodyRep">
+                        <div class="rep-legend">
+                            <div>Type</div>
+                            <div>Key</div>
+                            <div>Value</div>
+                            <div></div>
+                        </div>
+                        <div class="rep-rows" id="bodyRows"></div>
+                        <div class="rep-foot"><button class="btn btn-secondary btn-sm" type="button" id="bodyAdd"><svg
+                                    class="ic">
+                                    <use href="#i-plus" />
+                                </svg> Add row</button></div>
+                    </div>
+                    <div class="help-note" style="margin-top:8px">Write <span class="mono">"{{prompt}}"</span> where the
+                        caller's prompt goes, quotes included, and the encoder supplies its own escaping. Each field is
+                        typed, so a number stays an unquoted number and a structured field can carry a nested object or
+                        array. A blank key is skipped on save, not rejected.</div>
+                </div>
+
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="sect-head"><span class="sect-num">5</span>Response paths</div>
+                    <div class="form-grid cols-5">
+                        <div class="field-group"><label class="lbl" for="mPathContent">Content path</label><input
+                                class="field mono" id="mPathContent" data-tested-field
+                                placeholder="choices.0.message.content" /></div>
+                        <div class="field-group"><label class="lbl" for="mPathErr">Error path</label><input
+                                class="field mono" id="mPathErr" data-tested-field placeholder="error.message" /></div>
+                        <div class="field-group"><label class="lbl" for="mPathIn">Usage in</label><input
+                                class="field mono" id="mPathIn" data-tested-field placeholder="usage.prompt_tokens" />
+                        </div>
+                        <div class="field-group"><label class="lbl" for="mPathOut">Usage out</label><input
+                                class="field mono" id="mPathOut" data-tested-field
+                                placeholder="usage.completion_tokens" /></div>
+                        <div class="field-group"><label class="lbl" for="mPathFinish">Finish reason</label><input
+                                class="field mono" id="mPathFinish" data-tested-field
+                                placeholder="choices.0.finish_reason" />
+                            <div class="help-note">Set where the provider supplies one, so a truncated answer is not
+                                passed on as complete.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="sect-head"><span class="sect-num">6</span>Cost</div>
+                    <div class="form-grid">
+                        <div class="field-group"><label class="lbl" for="mPriceIn">Price in (per 1M)</label>
+                            <div class="money"><span class="cur-sym" aria-hidden="true">$</span><input class="field"
+                                    id="mPriceIn" placeholder="3.00" /></div>
+                        </div>
+                        <div class="field-group"><label class="lbl" for="mPriceOut">Price out (per 1M)</label>
+                            <div class="money"><span class="cur-sym" aria-hidden="true">$</span><input class="field"
+                                    id="mPriceOut" placeholder="15.00" /></div>
+                        </div>
+                        <div class="field-group col-2">
+                            <div class="help-note" style="margin:0">Leave a price blank and every call reports cost as
+                                <strong>unknown</strong>. It is never reported as zero. The price is as of the record's
+                                last update.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="sect-head"><span class="sect-num">7</span>Test</div>
+                    <div class="field-group" style="margin-bottom:12px"><label class="lbl" for="mTestPrompt">Test
+                            prompt</label><textarea class="field" id="mTestPrompt" rows="2" style="min-height:64px"
+                            placeholder="Reply with the single word: ready"></textarea>
+                        <div class="help-note">The test sends one real call on the values currently on screen, and saves
+                            nothing.</div>
+                    </div>
+                    <div id="mTestResult"></div>
+                </div>
+
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="gate-note"><svg class="ic" style="color:var(--badge-warning-fg)">
+                            <use href="#i-warning" />
+                        </svg>
+                        <div id="mGateNote"></div>
+                    </div>
+                </div>
+
+                <div class="form-foot" id="mFoot"></div>
+            </section>
+
+            <!-- =============================== EMAIL CHANNEL (TEST BEFORE SAVE) =============================== -->
+            <section class="view" id="view-ch-email" hidden>
+                <nav class="breadcrumb" aria-label="Breadcrumb" data-crumb></nav>
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title">Email Channel</h1>
+                        <p class="page-sub">Inbound mailbox that auto-creates tickets. Outbound connection
+                            configuration, so test before save applies.</p>
+                    </div>
+                </div>
+                <div class="card card-pad">
+                    <div class="gate-note" style="margin-bottom:14px"><svg class="ic" style="color:var(--badge-info-fg)">
+                            <use href="#i-info" />
+                        </svg>
+                        <div>The footer offers <strong>Reset</strong> and <strong>Test Configuration</strong> only.
+                            <strong>Save</strong> appears once a real connection check passes on the values currently on
+                            screen, and disappears again the moment a tested field is edited. There is no save-anyway
+                            path.
+                        </div>
+                    </div>
+                    <div class="form-grid cols-4">
+                        <div class="field-group"><label class="lbl" for="emAddr">Support address</label><input
+                                class="field mono" id="emAddr" data-tested-field
+                                placeholder="support@&lt;MAIL_DOMAIN&gt;" /></div>
+                        <div class="field-group"><label class="lbl" for="emProto">Protocol</label><select class="field"
+                                id="emProto" data-tested-field>
+                                <option>IMAP</option>
+                                <option>Microsoft Graph</option>
+                            </select></div>
+                        <div class="field-group"><label class="lbl" for="emKey">API key</label><input class="field"
+                                id="emKey" type="password" data-tested-field placeholder="Leave blank to keep saved"
+                                autocomplete="new-password" />
+                            <div class="help-note">Masked, never shown again after saving.</div>
+                        </div>
+                        <div class="field-group"><span class="lbl">Storage</span>
+                            <div style="display:flex;align-items:center;height:36px"><span class="badge badge-neutral"><svg
+                                        class="ic">
+                                        <use href="#i-shield" />
+                                    </svg> encrypted at rest</span></div>
+                        </div>
+                        <div class="field-group col-2"><span class="lbl">Connection status</span>
+                            <div id="emStatus"></div>
+                        </div>
+                    </div>
+                    <div class="form-foot" style="margin-top:14px" id="emFoot"></div>
+                </div>
+            </section>
+
+            
+
+            <!-- =============================== FEATURE REGISTRY (LIST / INDEX) =============================== -->
+            <section class="view" id="view-features" hidden>
+                <nav class="breadcrumb" aria-label="Breadcrumb" data-crumb></nav>
+                <div class="page-head">
+                    <div>
+                        <h1 class="page-title">Feature Registry</h1>
+                        <p class="page-sub">The grantable features, and the same list the navigation renders from. It
+                            is system configuration rather than application administration, so it sits under System
+                            Administration. Depth-overflow page: this leaf sits under the third accordion level, so
+                            its facets render as an in-canvas tab strip rather than a fourth sidebar level.</p>
+                    </div>
+                </div>
+                <nav class="tabstrip" id="featuresTabs" aria-label="Registry sections"><a class="tab"
+                        href="#features/features" data-tab="features"><svg class="ic">
+                            <use href="#i-list" />
+                        </svg> Features</a><a class="tab" href="#features/actions" data-tab="actions"><svg class="ic">
+                            <use href="#i-check" />
+                        </svg> Actions</a><a class="tab" href="#features/drift" data-tab="drift"><svg class="ic">
+                            <use href="#i-warning" />
+                        </svg> Drift</a></nav>
+                <div class="tab-panel" data-panel="features" data-list="features"
+                    data-list-default-sort="cluster">
+                <div class="card card-pad" style="margin-bottom:12px">
+                    <div class="filter-bar">
+                        <div class="filter-field"><label for="ftSearch">Search</label>
+                            <div class="search-input"><svg class="ic">
+                                    <use href="#i-search" />
+                                </svg><input type="text" id="ftSearch" data-list-search
+                                    placeholder="Code or name..." /></div>
+                        </div>
+                        <div class="filter-field"><label for="ftCluster">Cluster</label><select class="field"
+                                id="ftCluster" data-list-facet="cluster" data-list-col="2">
+                                <option value="">All clusters</option>
+                                <option>Workspace</option>
+                                <option>Compliance</option>
+                                <option>Application Administration</option>
+                                <option>System Administration</option>
+                            </select>
+                        </div>
+                        <div class="filter-field"><label for="ftActive">Status</label><select class="field"
+                                id="ftActive" data-list-facet="active" data-list-col="4">
+                                <option value="">All statuses</option>
+                                <option>Active</option>
+                                <option>Retired</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" type="button" data-list-clear hidden>Clear</button>
+                        <div style="flex:1"></div>
+                        <span class="muted" style="font-size:12px" data-list-count role="status"
+                            aria-live="polite"></span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="table-wrap">
+                        <table class="data">
+                            <thead>
+                                <tr>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="code">Code<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th class="col-grow" aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="name">Display name<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="cluster">Cluster<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
+                                    <th>Actions exposed</th>
+                                    <th aria-sort="none"><button type="button" class="th-sort"
+                                            data-list-sort="active">Status<span class="sort-caret"
+                                                aria-hidden="true"></span></button></th>
                                     <th class="col-actions">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="row-link">Ava Reyes</td>
-                                    <td class="muted">ava.reyes@claas2saas.com</td>
-                                    <td><span class="badge badge-violet">Admin</span></td>
+                                    <td class="muted">tickets</td>
+                                    <td class="row-link">Tickets</td>
+                                    <td>Workspace</td>
+                                    <td class="muted">view, create, edit, delete, export</td>
                                     <td><span class="badge badge-success"><span class="dot"></span>Active</span></td>
-                                    <td class="col-actions"><button class="btn btn-ghost btn-sm"><svg class="ic">
+                                    <td class="col-actions"><button class="btn btn-secondary btn-sm" type="button"
+                                            onclick="toast('info','The display name is editable. The code is not, because grants point at it.')"><svg
+                                                class="ic">
                                                 <use href="#i-pencil" />
                                             </svg> Edit</button></td>
                                 </tr>
                                 <tr>
-                                    <td class="row-link">Liam Chen</td>
-                                    <td class="muted">liam.chen@claas2saas.com</td>
-                                    <td><span class="badge badge-info">Collaborator</span></td>
+                                    <td class="muted">sla</td>
+                                    <td class="row-link">SLA Monitor</td>
+                                    <td>Compliance</td>
+                                    <td class="muted">view, export, approve</td>
                                     <td><span class="badge badge-success"><span class="dot"></span>Active</span></td>
-                                    <td class="col-actions"><button class="btn btn-ghost btn-sm"><svg class="ic">
+                                    <td class="col-actions"><button class="btn btn-secondary btn-sm" type="button"
+                                            onclick="toast('info','The display name is editable. The code is not, because grants point at it.')"><svg
+                                                class="ic">
                                                 <use href="#i-pencil" />
                                             </svg> Edit</button></td>
                                 </tr>
                                 <tr>
-                                    <td class="row-link">Priya Nair</td>
-                                    <td class="muted">priya.nair@claas2saas.com</td>
-                                    <td><span class="badge badge-neutral">Contributor</span></td>
-                                    <td><span class="badge badge-warning"><span class="dot"></span>Invited</span></td>
-                                    <td class="col-actions"><button class="btn btn-ghost btn-sm"><svg class="ic">
+                                    <td class="muted">roles</td>
+                                    <td class="row-link">Roles</td>
+                                    <td>Application Administration</td>
+                                    <td class="muted">view, create, edit, delete</td>
+                                    <td><span class="badge badge-success"><span class="dot"></span>Active</span></td>
+                                    <td class="col-actions"><button class="btn btn-secondary btn-sm" type="button"
+                                            onclick="toast('info','The display name is editable. The code is not, because grants point at it.')"><svg
+                                                class="ic">
                                                 <use href="#i-pencil" />
                                             </svg> Edit</button></td>
                                 </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-            <section class="view" id="view-sla" hidden>
-                <div class="page-head">
-                    <div>
-                        <h1 class="page-title">SLA Monitor</h1>
-                        <p class="page-sub">Tickets approaching or breaching their service-level target.</p>
-                    </div>
-                </div>
-                <div class="grid metrics" style="margin-bottom:14px">
-                    <div class="metric">
-                        <div class="metric-top"><span class="metric-lbl">Within SLA</span><span
-                                class="icon-chip chip-success"><svg class="ic">
-                                    <use href="#i-check-circle" />
-                                </svg></span></div>
-                        <div class="metric-num">94%</div><span class="metric-delta up">target 90%</span>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-top"><span class="metric-lbl">At risk (&lt;1h)</span><span
-                                class="icon-chip chip-warning"><svg class="ic">
-                                    <use href="#i-clock" />
-                                </svg></span></div>
-                        <div class="metric-num">7</div><span class="metric-delta">monitor closely</span>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-top"><span class="metric-lbl">Breached (24h)</span><span
-                                class="icon-chip chip-danger"><svg class="ic">
-                                    <use href="#i-warning" />
-                                </svg></span></div>
-                        <div class="metric-num">2</div><span class="metric-delta down">review needed</span>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-head">
-                        <h3>At risk now</h3>
-                    </div>
-                    <div class="table-wrap">
-                        <table class="data">
-                            <thead>
                                 <tr>
-                                    <th>Ref</th>
-                                    <th>Subject</th>
-                                    <th>Priority</th>
-                                    <th>Breaches in</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><span class="code-chip">INC-1042</span></td>
-                                    <td><a class="row-link" href="#ticket/INC-1042/overview">VPN drops on 4th floor</a>
-                                    </td>
-                                    <td>High</td>
-                                    <td style="color:var(--badge-danger-fg);font-weight:600">41m</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="code-chip">INC-1050</span></td>
-                                    <td class="row-link">Email delivery delayed</td>
-                                    <td>Medium</td>
-                                    <td style="color:var(--badge-warning-fg);font-weight:600">58m</td>
+                                    <td class="muted">legacy_reports</td>
+                                    <td class="row-link">Legacy Reports</td>
+                                    <td>Workspace</td>
+                                    <td class="muted">view, export</td>
+                                    <td><span class="badge badge-neutral"><span class="dot"></span>Retired</span></td>
+                                    <td class="col-actions"><button class="btn btn-secondary btn-sm" type="button"
+                                            onclick="toast('info','A retired feature keeps its row, so historical grants still resolve.')"><svg
+                                                class="ic">
+                                                <use href="#i-restore" />
+                                            </svg> Reactivate</button></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </section>
-            <section class="view" id="view-assets" hidden>
-                <div class="page-head">
-                    <div>
-                        <h1 class="page-title">Assets</h1>
-                        <p class="page-sub">Configuration items tracked in the CMDB.</p>
-                    </div><button class="btn btn-primary" onclick="toast('info','Asset editor is a mockup stub.')"><svg
-                            class="ic">
-                            <use href="#i-plus" />
-                        </svg> Add asset</button>
-                </div>
-                <div class="card">
-                    <div class="table-wrap">
-                        <table class="data">
-                            <thead>
-                                <tr>
-                                    <th>Tag</th>
-                                    <th>Name</th>
-                                    <th>Type</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><span class="code-chip">SRV-014</span></td>
-                                    <td class="row-link">core-switch-fl4</td>
-                                    <td>Network</td>
-                                    <td><span class="badge badge-warning"><span class="dot"></span>Maintenance</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><span class="code-chip">LAP-238</span></td>
-                                    <td class="row-link">MBP-14 (P. Nair)</td>
-                                    <td>Endpoint</td>
-                                    <td><span class="badge badge-success"><span class="dot"></span>In service</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><span class="code-chip">SRV-002</span></td>
-                                    <td class="row-link">vpn-gateway-01</td>
-                                    <td>Server</td>
-                                    <td><span class="badge badge-success"><span class="dot"></span>In service</span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-            <section class="view" id="view-ch-email" hidden>
-                <div class="breadcrumb"><a href="#dashboard">Administration</a><span
-                        class="sep">/</span><span>Platform</span><span
-                        class="sep">/</span><span>Configuration</span><span
-                        class="sep">/</span><span>Channels</span><span class="sep">/</span><span
-                        class="cur">Email</span></div>
-                <div class="page-head">
-                    <div>
-                        <h1 class="page-title">Email Channel</h1>
-                        <p class="page-sub">Inbound mailbox that auto-creates tickets.</p>
-                    </div>
-                </div>
-                <div class="card card-pad" style="max-width:640px">
-                    <div class="form-grid">
-                        <div class="field-group col-2"><label class="lbl">Support address</label><input
-                                class="field mono" value="support@claas2saas.com" /></div>
-                        <div class="field-group"><label class="lbl">Protocol</label><select class="field">
-                                <option>IMAP</option>
-                                <option>Microsoft Graph</option>
-                            </select></div>
-                        <div class="field-group"><label class="lbl">API key</label>
-                            <div style="display:flex;align-items:center;gap:10px"><span class="badge badge-neutral"><svg
-                                        class="ic">
-                                        <use href="#i-shield" />
-                                    </svg> encrypted at rest</span><button class="btn btn-ghost btn-sm">Replace</button>
                             </div>
-                        </div>
-                        <div class="field-group col-2"><label class="lbl">Health</label>
-                            <div style="display:flex;align-items:center;gap:10px"><span
-                                    class="badge badge-success"><span class="dot"></span>Connected</span><span
-                                    class="muted" style="font-size:12px">last checked 3m ago</span><button
-                                    class="btn btn-secondary btn-sm"
-                                    onclick="toast('info','Testing mailbox connection...')">Test connection</button>
-                            </div>
+                <div class="tab-panel" data-panel="actions">
+                    <div class="card card-pad" style="margin-bottom:12px">
+                        <div class="gate-note"><svg class="ic" style="color:var(--badge-info-fg)">
+                                <use href="#i-info" />
+                            </svg>
+                            <div>One shared vocabulary for every feature, so the grant matrix has consistent columns.
+                                A feature that does not expose an action simply has no cell for it. Never invent a
+                                per-feature action, because two features with private vocabularies cannot be compared
+                                in one grid.</div>
                         </div>
                     </div>
-                    <div class="form-foot" style="margin-top:14px"><button class="btn btn-primary"
-                            onclick="toast('success','Email channel saved.')"><svg class="ic">
-                                <use href="#i-check" />
-                            </svg> Save</button></div>
+                    <div class="card">
+                        <div class="table-wrap">
+                            <table class="data">
+                                <thead>
+                                    <tr>
+                                        <th class="col-grow">Action</th>
+                                        <th>Means</th>
+                                        <th>Features exposing it</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="muted mono">view</td>
+                                        <td>Reach the feature at all. The base action: every other action implies it.
+                                        </td>
+                                        <td>10</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="muted mono">create</td>
+                                        <td>Add a new record</td>
+                                        <td>5</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="muted mono">edit</td>
+                                        <td>Change an existing record</td>
+                                        <td>6</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="muted mono">delete</td>
+                                        <td>Move a record to the recycle bin</td>
+                                        <td>5</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="muted mono">export</td>
+                                        <td>Take data out of the application</td>
+                                        <td>4</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="muted mono">approve</td>
+                                        <td>Sign off a record or a waiver</td>
+                                        <td>1</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-panel" data-panel="drift">
+                    <div class="card card-pad" style="margin-bottom:12px">
+                        <div class="gate-note"><svg class="ic" style="color:var(--badge-warning-fg)">
+                                <use href="#i-warning" />
+                            </svg>
+                            <div>The registry and the navigation tree are meant to be one list. A feature in the tree
+                                with no registry row cannot be granted to anyone, so it renders for nobody. A registry
+                                row with no feature in the tree is a grant pointing at nothing. And an active row that
+                                resolves to no route at all is granted, gets no link, and still counts toward its
+                                cluster, so whoever holds it opens a heading with nothing under it. Three kinds of
+                                drift, and all three are why a menu entry can outlive the thing it points at.</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="table-wrap">
+                            <table class="data">
+                                <thead>
+                                    <tr>
+                                        <th class="col-grow">Item</th>
+                                        <th>Where it exists</th>
+                                        <th>Where it is missing</th>
+                                        <th>Effect</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="row-link">Knowledge Base</td>
+                                        <td>Navigation tree</td>
+                                        <td><span class="badge badge-warning"><span class="dot"></span>Registry</span>
+                                        </td>
+                                        <td class="muted">Cannot be granted, so it renders for nobody</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="row-link">Legacy Reports</td>
+                                        <td>Registry (retired)</td>
+                                        <td><span class="badge badge-neutral"><span class="dot"></span>Navigation</span>
+                                        </td>
+                                        <td class="muted">Retired deliberately; historical grants still resolve</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="row-link">Capacity Planner</td>
+                                        <td>Registry and navigation tree</td>
+                                        <td><span class="badge badge-danger"><span class="dot"></span>Route</span>
+                                        </td>
+                                        <td class="muted">Granted but never built, so its cluster heading renders with
+                                            nothing under it</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </section>
+
+            <!-- ####################  NOT IN THE NAVIGATION  #################### -->
+            <!-- =============================== MY PROFILE =============================== -->
             <section class="view" id="view-profile" hidden>
                 <div class="page-head">
                     <div>
@@ -1102,6 +2297,8 @@
                     </div>
                 </div>
             </section>
+
+            <!-- =============================== PLACEHOLDER (ROUTE IN THE TREE, NOT BUILT HERE) =============================== -->
             <section class="view" id="view-placeholder" hidden>
                 <div class="card">
                     <div class="state-block"><span class="icon-chip chip-primary"><svg class="ic">
@@ -1115,13 +2312,19 @@
                     </div>
                 </div>
             </section>
+
         </main>
     </div>
     <div class="nav-flyout" id="navFlyout" role="menu" aria-label="Group navigation"></div>
     <div class="flyout-tooltip" id="navTooltip" role="tooltip"></div>
-    <div class="toast-region" id="toastPolite" aria-live="polite" aria-atomic="false"></div>
-    <div class="toast-region" id="toastAssertive" aria-live="assertive" aria-atomic="false"
-        style="top:auto;bottom:14px"></div>
+    <!-- One host, top right, offset below the top bar so a toast never covers the top-bar utilities.
+         Both live regions sit inside it, assertive first, so an error stacks above the informational
+         toasts instead of appearing in another corner. Politeness decides how a message is announced,
+         never where it shows up. -->
+    <div class="toast-host">
+        <div class="toast-region" id="toastAssertive" aria-live="assertive" aria-atomic="false"></div>
+        <div class="toast-region" id="toastPolite" aria-live="polite" aria-atomic="false"></div>
+    </div>
     <div class="modal-backdrop" id="modalBackdrop">
         <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"
             aria-describedby="modalDesc">

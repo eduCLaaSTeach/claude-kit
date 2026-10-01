@@ -2,7 +2,7 @@
 
 Claude must govern data across its lifecycle whenever a change stores, retains, backs up, or recovers data.
 
-Conditional: applies only when the project stores data beyond transient request state. It does not override `.claude/rules/secret-handling.md`, `.claude/rules/schema-mcp.md`, `.claude/rules/production-readiness.md`, or the DDL restrictions.
+Conditional: applies only when the project stores data beyond transient request state. It does not override `.claude/rules/secret-handling.md`, `.claude/rules/database-schema.md`, `.claude/rules/production-readiness.md`, or the DDL restrictions.
 
 ## Assume No Storage Model
 
@@ -14,12 +14,16 @@ Conditional: applies only when the project stores data beyond transient request 
 - Classify every persisted data element into the confirmed sensitivity scheme, and let encryption, access control, logging, and retention be driven by class rather than applied uniformly.
 - Record each table's and field's classification alongside its table-dictionary metadata, per `.claude/rules/knowledge-base.md`. Metadata only; never store row data or production values.
 - Apply least-privilege access per class, consistent with `.claude/rules/enterprise-governance.md`.
+- Classify a new personal or sensitive data element before its storage shape is shown for confirmation, not after it is created.
+- Collect, send, and retain only the personal or sensitive fields the stated purpose needs, whether or not a privacy regime applies. A field with no purpose is not added, not sent to another service or a model, and not written to a log or an export.
+- The session store, the sign-in outcome record, the application's own copy of the user's name and email, and the feature registry, role, grant, and assignment tables are persisted data and carry their own confirmed classification and retention. Identity fields received from another system are personal data and are classified as such rather than treated as incidental because the application did not collect them. The sign-in outcome record and grant-change history are part of the security audit trail, so they take the audit retention recorded in `.claude/PROJECT-CONTEXT.md` unless a different one is confirmed, per `.claude/rules/secure-coding.md`.
 
 ## Retention And Purge
 
 - Give each class a confirmed retention period; do not act on an unconfirmed one.
 - Purge or anonymize expired data on a defined schedule once retention elapses.
-- Audit and compliance logs may carry a distinct, often longer retention. Keep it separate from the operational data class and record it as a confirmed fact.
+- Audit and compliance logs, including the security audit trail in `.claude/rules/secure-coding.md`, may carry a distinct, often longer retention. Keep it separate from the operational data class and record it as a confirmed fact.
+- History, event, attempt, and snapshot tables carry their own confirmed retention. They are usually the largest and longest-lived tables a feature has, and purging them changes numbers that have already been reported, so confirm the period rather than assuming either that they are kept forever or that they may be pruned. See `.claude/rules/semantic-data-model.md`.
 
 ## Privacy Regime
 

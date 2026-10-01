@@ -14,7 +14,7 @@ Define each token below in the project's own styling system (CSS custom properti
 | semantic.warning | Sunray | `#E9AC53` |
 | semantic.danger | Violet-Red | `#991547` |
 | semantic.info | Jelly Bean Blue | `#448E9D` |
-| Secondary (buttons) | Cadmium Violet | `#7F3F98` |
+| Secondary (badges, chips, non-interactive accents - **not** a button fill; see `buttons.md` §4) | Cadmium Violet | `#7F3F98` |
 | Neutral family | Platinum Beige + White | `#EEE7E0` ramp, `#FFFFFF` |
 
 Never repurpose a role's color and never introduce an off-palette hue; a genuinely new tint derives from an approved hue and must keep the WCAG AA bar (all pairs below are verified: body text well above 4.5:1, indicators at least 3:1).
@@ -80,7 +80,7 @@ Semantic colors used as text, icons, or thin edges on a surface always go throug
 | --- | --- |
 | Top bar and rail head height | 52px (their bottom dividers form one continuous line) |
 | Sidebar width | 240px expanded / 56px collapsed |
-| Controls | buttons and inputs 32px tall (small 27px), top-bar icon buttons 34px, avatar 30px |
+| Controls | buttons and inputs 32px tall (small 27px), top-bar icon buttons 34px, avatar 30px; a button and the field beside it share one height and one border token, and every button at a given size shares one geometry (`buttons.md` §4) |
 | Wide logo | `height: 22px; width: auto` in the rail head |
 | C2S short mark | 40x34 slot, `object-fit: contain`, centered in the collapsed rail |
 | Scrollbars | the sidebar nav list and the main canvas hide scrollbars visually (`scrollbar-width: none` + hidden webkit scrollbar) while staying fully scrollable |

@@ -2,7 +2,7 @@
 
 Claude must design and evolve service interfaces against one project-confirmed set of conventions whenever a change exposes or consumes a service interface.
 
-Conditional: applies only when the project exposes or consumes a service interface, any paradigm (request/response, RPC, query-graph, message-based). It does not override `.claude/rules/secret-handling.md`, `.claude/rules/schema-mcp.md`, `.claude/rules/production-readiness.md`, or the DDL restrictions.
+Conditional: applies only when the project exposes or consumes a service interface, any paradigm (request/response, RPC, query-graph, message-based). It does not override `.claude/rules/secret-handling.md`, `.claude/rules/database-schema.md`, `.claude/rules/production-readiness.md`, or the DDL restrictions.
 
 ## Assume No Interface Paradigm
 
@@ -15,6 +15,7 @@ Conditional: applies only when the project exposes or consumes a service interfa
 - Use a consistent resource/operation naming and addressing convention across the whole interface, matching the confirmed paradigm.
 - Apply bounded, consistent pagination, filtering, and sorting to every collection response, with a maximum page-size cap so a single request cannot be unbounded. Confirm and record the cap; do not invent one.
 - Make the transport result code truthfully reflect the outcome. Never return a success code with an error body, or an error code for a successful operation.
+- As a consumer, treat a success status as the far end's claim rather than a guarantee the contract was met. Check the fields the call exists for before acting on them, and treat a required field that is present but empty as missing. A response that passes the status check and fails the contract check is its own recorded outcome, not a retry.
 
 ## Single Error Contract
 
@@ -30,8 +31,9 @@ Conditional: applies only when the project exposes or consumes a service interfa
 ## Boundary Authentication
 
 - Validate each inbound request's credential at the boundary (signature, issuer, audience, expiry) using the confirmed credential format. Do not assume the format; confirm or ask.
-- Distinguish unauthenticated (no valid credential) from authorized-but-insufficient (valid credential, lacking permission) in the result code.
+- Distinguish unauthenticated (no valid credential) from authorized-but-insufficient (valid credential, lacking permission) in the result code. A record outside the caller's query scope is neither: it answers as not found, the same as a record that does not exist, per `.claude/rules/secure-coding.md`.
 - Apply least privilege at the interface per `.claude/rules/enterprise-governance.md`. Do not print or persist credentials, tokens, or decoded claims.
+- Where the interface serves a signed-in user of this application, the identity arrives through the application's authentication model as recorded in `.claude/PROJECT-CONTEXT.md`, and the authorization is the application's own, resolved per feature, per the role and access model in `.claude/rules/ui-ux-quality.md`.
 
 ## Lossless Serialization
 

@@ -16,7 +16,7 @@ Before deployment-related edits or instructions, confirm or ask for:
 - artifact/output path, web root, startup command, service entry point, or container image details
 - domain/base URL, networking, routing, security certificate, cache/CDN, proxy details when applicable
 - environment variables (placeholders only)
-- database engine if applicable, Schema MCP `schema` readiness, migrations policy, data safety rules
+- database engine if applicable, migrations policy, data safety rules
 - storage, messaging, auth/integration, background processing, scheduling, cache, search, other operational requirements
 - logs, monitoring, health checks, rollback, post-deployment validation
 
@@ -30,7 +30,7 @@ Apply provider-, runtime-, framework-, database-, or deployment-specific rules o
 
 Some changes work only after the developer performs manual, out-of-band actions Claude cannot perform. Surface them explicitly instead of assuming the environment is prepared.
 
-- When applicable, give an explicit, ordered checklist of manual steps on the server or in the provider's control panel/portal. Common cases: setting env vars or app settings; creating or scheduling a cron/background job; provisioning a domain, DNS records, or an SSL/TLS certificate; creating a database or database user; adjusting file/directory permissions; enabling a runtime extension or module; configuring a worker, queue, cache, or service binding; restarting the service.
+- When applicable, give an explicit, ordered checklist of manual steps on the server or in the provider's control panel/portal. Common cases: setting env vars or app settings; creating or scheduling a cron/background job; provisioning a domain, DNS records, or an SSL/TLS certificate; creating a database or database user; adjusting file/directory permissions; enabling a runtime extension or module; configuring a worker, queue, cache, or service binding; turning debug or verbose error output off in production; setting the confirmed security headers and request body size limit where the web server or proxy owns them; granting the application's database identity insert and select, with no update or delete, on the security audit trail; provisioning the confirmed malware scanner; restarting the service.
 - Keep steps provider-neutral until the provider is confirmed. Name a specific provider only after confirmation, per Conditional Provider Rules, and use placeholders such as `<APP_BASE_URL>` and `<DATABASE_NAME>` per `.claude/rules/secret-handling.md`; never put real values in steps.
 - Treat any production-impacting manual step as requiring explicit approval; do not perform it yourself.
 - If no manual server-side steps are needed, say so.

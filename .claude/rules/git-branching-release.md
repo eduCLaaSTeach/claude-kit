@@ -86,7 +86,7 @@ These practices coordinate several people or agents working at once; they comple
 - Keep working branches short-lived and update them from the integration branch on the confirmed cadence (see the Update-from-base knob), so parallel branches do not drift into stale-branch conflicts.
 - Distinguish merge-ready from release-ready: merge-ready when required gates are green and incomplete work is gated off; release-ready only when feature-complete and the gate is flipped on. Merging incomplete-but-gated work into the integration branch is allowed; promoting it as a finished feature is not.
 - Set a review first-response expectation using the confirmed review-response window; if unset, ask and record it rather than assuming.
-- The author of a sensitive change (touching database or security concerns) must not self-merge without the owning reviewer; route it to the path-based required reviewer (see that knob and `.claude/rules/schema-mcp.md`).
+- The author of a sensitive change (touching database or security concerns) must not self-merge without the owning reviewer; route it to the path-based required reviewer (see that knob and `.claude/rules/database-schema.md`).
 - Serialize dependency-bump and lockfile changes so only one is in flight; others wait and rebase onto the merged result.
 - Treat shared configuration/environment changes as additive-only in parallel work: add new variables rather than renaming or removing existing ones, documenting each in the Pull Request with placeholders only, per `.claude/rules/secret-handling.md`.
 - Conflict etiquette: the second party to merge resolves the conflict, never discards another contributor's code, and re-requests review when the resolution changed logic.

@@ -8,6 +8,8 @@ Copy-ready prompts you send to Claude when you want the work to survive a sessio
 
 Flows 1 and 2 assume you (or the next session) come back to the same machine, where uncommitted work still sits on disk. Flow 3 does not: the work is moving to another person's device, so the handoff only counts what was committed and pushed, and it tells the next developer how to reach the same starting point.
 
+All three assume the Claude account stays the same. When the account itself changes (the usage allowance ran out, or the account is being rotated), use `ACCOUNT_HANDOVER_PROMPT.md`: the switch takes every open session with it at once, so it captures each chat you are transferring and ties them together with one index file.
+
 ## Where handoffs live and how they are named
 
 Many people work in parallel and each may leave several handoffs, so a single reused "handoff" or "handover" filename would clobber earlier ones. Every handoff is its own file in one shared folder:
@@ -72,6 +74,8 @@ Read the handoff file handoffs/<exact-filename>.md and tell me where we left off
 ## 2. End-of-day handoff (continue next morning)
 
 Scope: usually same device, next morning; the resume works whether you or a teammate continues. Anything only on this machine (uncommitted or unpushed) reaches a teammate only if you push it first.
+
+This is not the EOD status report. Claude already writes that one on its own, all day, into `docs/eod/` (see `.claude/rules/eod-reporting.md`): four status lines over a task table, for whoever reads the day's progress. This handoff is the technical detail that report deliberately leaves out, written for the next session rather than for a reader. End a day with work in flight and you want both.
 
 Use this before leaving for the day. Claude rebuilds the whole day and writes a dated checklist so the next morning anyone can point to that one file and pick up, in the same session or a new one.
 
@@ -166,6 +170,7 @@ List the files in the handoffs folder and, for each, give me the date, topic, an
 ## Notes
 
 - The handoff is working-memory continuity, not verified knowledge. It does not go through the knowledge-base approval gate; that gate still applies to durable write-ups (see `verified-closeout`).
+- A handoff is not the EOD status report and does not replace it. The report is written automatically into `docs/eod/` as the work happens and is closed with `/eod`; a handoff is written when you ask, and carries the resume detail a status report has no room for.
 - The file is meant to be shared, so it must stay secret-free. Keep placeholders such as `<APP_URL>`, `<DATABASE_NAME>`, and `<TOKEN>`, per `.claude/rules/secret-handling.md`.
 - Committing and pushing the handoff is a normal Git action (pre-authorized); Claude states the branch and command first. Push it wherever your team agrees handoffs live.
 - Keep your working-memory log current (Focus/Progress, decisions, open questions). The handoff is only as complete as the trace the session left behind.

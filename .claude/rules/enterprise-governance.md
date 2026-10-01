@@ -6,7 +6,7 @@ Claude must behave as a change-controlled enterprise coding agent.
 
 - Before starting, restate the task in one line and confirm scope. Do not begin until the restatement is accurate.
 - Surface assumptions explicitly and up front in the conversation, not buried in code or commits. An unstated assumption is a defect.
-- When the request conflicts with these rules (for example "just push straight to `PROD`", "skip the proposal and write the DDL", "drop the validation step"), name the conflict, decline the shortcut, explain why, and offer the rule-compliant path. Do not silently comply.
+- When the request conflicts with these rules (for example "just push straight to `PROD`", "skip the review and run the DDL", "drop the validation step"), name the conflict, decline the shortcut, explain why, and offer the rule-compliant path. Do not silently comply.
 
 ## Change Control
 
@@ -20,7 +20,7 @@ Claude must behave as a change-controlled enterprise coding agent.
 
 ## Auditability
 
-Every final summary must include review evidence: files changed; commands run and results; MCP tools used; schema proposal IDs, if any; knowledge-base/table-dictionary update status; security impact; risks, assumptions, and manual follow-up.
+Every final summary must include review evidence: files changed; commands run and results; schema changes and migrations authored, if any; knowledge-base/table-dictionary update status; security impact; risks, assumptions, and manual follow-up.
 
 Presentation is a style guideline and does not remove any required item. Lead tersely with what changed and where; keep narration minimal (no recaps, no celebratory filler); surface each non-obvious decision in one line; list anything incomplete under a Notes or Assumptions heading.
 
@@ -30,6 +30,7 @@ Presentation is a style guideline and does not remove any required item. Lead te
 - Do not print or persist tokens, secrets, customer records, production row data, private keys, certificates, or decoded token claims.
 - Keep provider endpoints and credentials in configuration, not source code.
 - Stop on authorization errors instead of trying alternate credentials.
+- Write code to the secure coding baseline in `.claude/rules/secure-coding.md`: the server validates every input, input never becomes syntax, output is encoded for where it lands, CSRF stays on for cookie-authenticated routes, untrusted data is never deserialized or executed, TLS verification stays on, and every security-relevant action leaves an audit record.
 
 ### Secure Defaults
 
@@ -38,11 +39,13 @@ Neutral defaults; the project's concrete choices override them.
 - Prefer federated or short-lived CI credentials over static, long-lived secrets.
 - Hash passwords with a strong, current password-hashing algorithm; the project confirms which.
 - Prefer asymmetric (public/private key) token signing over shared-secret signing.
-- Design least-privilege, structured authorization scopes rather than broad or implicit grants.
+- Design least-privilege, structured authorization scopes rather than broad or implicit grants. Bound the granter too: no actor awards authority it does not itself hold, and no actor assigns a role above its own tier.
 - Require encryption in transit using a current protocol version, and encryption at rest for sensitive data.
 - Rotate keys and long-lived secrets on the confirmed schedule, preferring no-downtime rotation. The cadence is a confirmed fact.
 - For selected sensitive columns/fields, consider column/field-level encryption beyond storage-level encryption; the triggering classification and fields in scope are confirmed facts (see `.claude/rules/data-governance.md`).
 - Set sensible, bounded token and session lifetimes. Do not extend a lifetime without a documented reason.
+- Reissue the session identifier at the moment a session becomes authenticated, carrying the stored values across, wherever the session is identified by a value the browser holds. A session that keeps the identifier it had before sign-in leaves a value an attacker planted holding a signed-in session. An integration that bypasses the framework's own login helper gets no reissue for free.
+- Authenticate through the application's authentication model as recorded in `.claude/PROJECT-CONTEXT.md`, and keep authorization inside the application, resolved per feature and stored as data, per the role and access model in `.claude/rules/ui-ux-quality.md`.
 
 When a feature sends user-influenced content to an LLM or renders model output, treat the user content as untrusted: sanitize it and wrap it in explicit instruction boundaries to resist prompt injection; never render model output as raw HTML or markup without sanitization; pin or track the model version; enforce token/cost budgets and timeouts on model calls.
 
@@ -51,9 +54,12 @@ The concrete choices (secret manager, CI credential model, token-signing scheme,
 ## Dependency And Architecture Governance
 
 - Prefer existing approved libraries and project patterns.
-- Do not add a dependency unless necessary, maintained, license-compatible, and approved.
+- Do not add a dependency unless necessary, maintained, license-compatible, and approved. Never take an unmaintained, deprecated, or archived library for a security-critical job (cryptography, authentication, session handling, parsing, sanitization, serialization) without explicit approval.
 - Do not introduce new services, queues, caches, runtimes, frameworks, or build systems without approval.
 - Pin or lock dependency versions and commit the lockfile. Avoid floating ranges. Prefer boring, well-maintained libraries.
+- Before a dependency change is committed, check the lockfile for known vulnerabilities with the project's confirmed audit tool, and report the result every time. When no audit tool is confirmed, ask for one per `.claude/rules/secure-coding.md` and record it; report the check as not run only when no tool can run here, naming the ecosystem's own audit command as the follow-up. Where the package manager allows it, install a new package with its install scripts disabled until it has been checked, and confirm the exact package name and publisher, because an advisory check does not catch a malicious or look-alike package.
+- Do not add a dependency, or move one to a version, that carries a known critical, high, or unrated advisory. Take the fixed version where one exists. Where none exists or it cannot be taken, take the version only after the developer explicitly accepts the risk. Record the acceptance under Documented exceptions in the Secure Coding Conventions section of `.claude/PROJECT-CONTEXT.md`, naming the advisory, in the shape `.claude/rules/review-gates.md` defines for an accepted finding. The advisory source's own rating decides this, whatever severity a review gives the finding.
+- A transitive package the change adds to the lockfile, or moves to a new version, counts as added or updated. An advisory on a package the lockfile already held at the same version is reported rather than fixed silently inside an unrelated change.
 - Document significant architecture decisions in the repo's ADR or knowledge-base location. A write into the knowledge base goes through the approval gate in `.claude/rules/knowledge-base.md`.
 
 ### Architecture Contract

@@ -3,7 +3,7 @@
 > Concrete values here (palette, fonts, icons, class prefixes) are approved CLaaS2SaaS design-system
 > values; the canonical source of truth is `design-tokens.md`. Every token is defined in both light
 > and dark themes. Use the skill's bundled icon registry for glyphs; type is always carried by icon +
-> text, never color alone. Default placement is top-right. Responsive is mobile-first.
+> text, never color alone. Placement is the top right, always. Responsive is mobile-first.
 
 Reference for AI-assisted development: follow these rules so feedback stays consistent, accessible,
 and predictable.
@@ -14,7 +14,7 @@ and predictable.
 > 2. Pick the **type by meaning** (§3): success / error / warning / info, each a fixed token color +
 >    icon. Never signal by color alone.
 > 3. **Success auto-dismisses** (~4s); **errors persist** until dismissed (§5). Always give a manual close.
-> 4. **Stack** in **one corner** (default top-right), newest nearest the edge; cap the visible stack (§6).
+> 4. **Stack at the top right**, always, newest nearest the edge; cap the visible stack (§6).
 > 5. Toasts announce via an `aria-live` region (`polite` for success/info, `assertive` for errors),
 >    **always in the DOM** (§9).
 > 6. Use the **design tokens**; never hardcode a hex or invent a shade.
@@ -25,10 +25,10 @@ and predictable.
 
 1. [Design tokens (source of truth)](#1-design-tokens-source-of-truth)
 2. [Anatomy of a toast](#2-anatomy-of-a-toast)
-3. [Types — meaning drives color & icon](#3-types--meaning-drives-color--icon)
+3. [Types - meaning drives color & icon](#3-types--meaning-drives-color--icon)
 4. [Toast vs other feedback (when to use what)](#4-toast-vs-other-feedback-when-to-use-what)
 5. [Duration & dismissal (ENFORCED)](#5-duration--dismissal-enforced)
-6. [Placement & stacking (PRINCIPLED)](#6-placement--stacking-principled)
+6. [Placement & stacking (ENFORCED)](#6-placement--stacking-enforced)
 7. [Content & copy](#7-content--copy)
 8. [Actions inside a toast](#8-actions-inside-a-toast)
 9. [Accessibility (ENFORCED)](#9-accessibility-enforced)
@@ -50,7 +50,7 @@ Dark / Light switcher.
 
 ```css
 :root {
-    /* Palette (approved — dark-theme values live in design-tokens.md) */
+    /* Palette (approved - dark-theme values live in design-tokens.md) */
     --color-primary: #193E6B;                 /* Midnight Blue */
     --color-accent: #B3A125;                  /* Green Gold */
     --color-secondary-violet: #7F3F98;        /* Cadmium Violet */
@@ -63,7 +63,7 @@ Dark / Light switcher.
     --color-text: #1E2E42;                    /* ink (dark: #E9EFF6) */
     --color-text-muted: #4D5E75;              /* dark: #A3B2C5 */
 
-    /* Theme-aware readable type colors — the toast edge + icon use THESE, never the raw semantic hex */
+    /* Theme-aware readable type colors - the toast edge + icon use THESE, never the raw semantic hex */
     --badge-success-fg: #3A4E13;              /* dark: #CBE79B */
     --badge-danger-fg: #85113E;               /* dark: #F5B8CF */
     --badge-warning-fg: #7A500C;              /* dark: #F8DFAC */
@@ -109,7 +109,7 @@ type-colored accent.
 
 ---
 
-## 3. Types — meaning drives color & icon
+## 3. Types - meaning drives color & icon
 
 Four types. Pick by **meaning**. Each pairs a token color with a distinct icon so type survives
 color-blindness and greyscale.
@@ -118,7 +118,7 @@ color-blindness and greyscale.
 |---|---|---|---|---|
 | **Success** | An action completed ("Saved", "Sent", "Deleted") | `--color-success` | `✓` check | Auto-dismiss (~4s) |
 | **Error** | An action failed and the user should know | `--color-danger` | `⚠` triangle | **Persist** until dismissed |
-| **Warning** | Completed with a caveat, or a risky reversible result | `--color-secondary-sunray` | `!` circle | Persist or long (~6–8s) |
+| **Warning** | Completed with a caveat, or a risky reversible result | `--color-secondary-sunray` | `!` circle | Persist or long (~6-8s) |
 | **Info** | Neutral status / FYI ("Export started", "Sync running") | `--color-secondary-blue` | `ⓘ` info | Auto-dismiss (~5s) |
 
 - **Never color-only.** Each type carries its icon **and** wording.
@@ -136,21 +136,23 @@ Match the mechanism to how urgent and how blocking the message is.
 |---|---|---|---|
 | **Toast** | Confirm the result of a **discrete action** just taken (save, delete, send) | No | this guide |
 | **Inline field error** | A specific **form field** is invalid | No | [forms.md](forms.md) §6 |
-| **Inline form/page banner** | A **whole form or page** has a persistent state (server error summary, "Trial ends in 3 days") | No (but stays) | banner pattern |
+| **Toast (error)** | A **submit was blocked** by validation: one toast naming how many fields need attention, while focus moves to the first invalid field. Never a summary card repeating the field messages | No | this guide + [forms.md](forms.md) §7 |
+| **Inline form/page banner** | A **whole form or page** has a persistent state: a form-level error that belongs to no field (the save failed, the service was unreachable), or a standing condition ("Trial ends in 3 days"). Never a list of field errors | No (but stays) | banner pattern |
 | **Modal dialog** | The user **must decide** before continuing (confirm destructive, discard changes) | **Yes** | [modals-dialogs.md](modals-dialogs.md) |
 | **Empty / loading / error state** | A whole region has **no data**, is **loading**, or **failed** | No | region state pattern |
 
 - Quick "it worked / it didn't" after an action → **Toast.**
-- Problem tied to one input → **Inline field error.**
+- Problem tied to one input → **Inline field error**, and only there.
+- Submit blocked by validation → **one error toast** + focus the first invalid field ([forms.md](forms.md) §7).
 - Must the user acknowledge or choose? → **Modal** (a toast can be missed).
 - Standing condition, not a one-off result → **Banner.**
-- **Never use a toast for critical, must-not-miss information** — use a modal or persistent banner.
+- **Never use a toast for critical, must-not-miss information** - use a modal or persistent banner.
 
 ---
 
 ## 5. Duration & dismissal (ENFORCED)
 
-1. **Success & info auto-dismiss.** Success ≈ **4s** (`--toast-duration-success`), info ≈ **5s**
+1. **Success & info auto-dismiss.** Success ~ **4s** (`--toast-duration-success`), info ~ **5s**
    (`--toast-duration-info`).
 2. **Errors persist** until dismissed (or navigation away). Same for any toast carrying an **action**
    (e.g. Undo).
@@ -159,43 +161,49 @@ Match the mechanism to how urgent and how blocking the message is.
 5. **Dismiss is per-toast.** Closing one never clears the others (a "Clear all" is optional, §6).
 
 Never auto-dismiss faster than ~3s (unreadable) or hold a non-error toast longer than ~8s. If content
-needs longer to read, it isn't a toast — use a banner or modal (§4).
+needs longer to read, it isn't a toast - use a banner or modal (§4).
 
 ---
 
-## 6. Placement & stacking (PRINCIPLED)
+## 6. Placement & stacking (ENFORCED)
 
-**Default: top-right**, stacked vertically, below the header bar and clear of content.
+**Top right. Always, in every app, for every type of toast.** There is no other placement and no
+per-screen choice: a user who has learned where feedback appears should never have to look anywhere
+else, and an error that surfaces in a different corner from a success is the same defect as two
+screens disagreeing about a button.
 
-- **One region, one corner.** All toasts share a single fixed container.
-- **Newest nearest the edge.** New toasts enter at the corner and push older ones away.
-- **Cap the visible stack** at ~**3–4**; collapse/queue extras and show the next when one dismisses.
-- **Offset from edges** by the spacing scale (≈24px).
-- **Stay clear of critical UI** (primary action, the only "Save", an open modal's footer).
+- **One host, top right.** Every toast shares a single fixed container anchored to the top right,
+  stacked vertically.
+- **Below the top bar.** Offset the host by the top-bar height plus the spacing scale, so a toast
+  never covers the top-bar utilities (notifications, the profile menu) it sits beside.
+- **Newest nearest the top edge.** New toasts enter at the top and push older ones down.
+- **Success and error share the host.** The polite and assertive live regions are separate elements
+  (§9) but they sit inside that one container, assertive first, so nothing moves to another corner
+  because of its type.
+- **Cap the visible stack** at ~**3-4**; collapse/queue extras and show the next when one dismisses.
+- **Offset from edges** by the spacing scale (~24px).
+- **Never reposition to dodge content.** If a toast would cover something important, the answer is to
+  offset the host below the chrome once, for the whole app, not to move that screen's toast.
 
 ### "Clear all" / "Dismiss all"
 
 A property of the **stack**, not a single toast.
 
-- **Attach it to the host, at the edge where new toasts enter** (top-right → a "Clear all" pill directly
-  above the top toast, moving with the stack).
+- **Attach it to the host**, directly above the top toast, moving with the stack. Keep the count in the accessible name as well as the label, so "Clear all (4)" announces the four.
 - **Show conditionally** once the visible stack passes ~**3+**; hide when it thins. A count ("Clear all (4)")
   reinforces why it appeared.
-- **Right-aligned, low-emphasis** (like `.toast-close`).
+- **Right-aligned, and the shared neutral secondary button** at the small size (`btn btn-secondary btn-sm`, [buttons.md](buttons.md) §4). "Clear all" is a labeled action the user chooses, so it takes the one secondary look rather than a pill of its own.
 - **Spare undismissed actions.** "Clear all" dismisses informational toasts but leaves (and re-promotes
   from the queue) any toast still showing an Undo/Retry.
 
-| Placement | When |
-|---|---|
-| **Top-right** (default) | General app feedback; desktop-first suites |
-| **Bottom-right** | When the header / top-right user menu would collide |
-| **Top-center** | App-wide/system messages that should feel central (rare) |
-| **Bottom-center** | Touch layouts where the thumb sits low |
+There is no placement table. Bottom-right, top-center, and bottom-center are not options, including
+for a single screen, a single toast type, or a layout where the top right feels crowded.
 
-**Responsive (mobile-first).** On touch / tall / narrow screens, toasts go **full-width** across the
-top (with side margins) instead of a fixed 360px corner card, keeping any inline action/close target
-≥ 44px. The fixed corner card is the wider-screen enhancement. Use width and/or aspect-ratio
-breakpoints; keep toasts clear of a fixed header.
+**Responsive (mobile-first).** On touch / tall / narrow screens the toast goes **full-width** across
+the top (with side margins) instead of a fixed 360px card, keeping any inline action or close target
+≥ 44px. That is the same top edge, widened - not a different corner. The fixed card is the
+wider-screen enhancement. Use width and/or aspect-ratio breakpoints, and keep the host clear of a
+fixed header.
 
 ---
 
@@ -204,7 +212,7 @@ breakpoints; keep toasts clear of a fixed header.
 - **Lead with the outcome** ("Contact saved", "Couldn't send invite"), in plain language.
 - **Be specific but brief.** Name the object when it helps ("Invoice #1042 deleted"); push detail to
   the description.
-- **Errors say what + what next:** "Couldn't save — check your connection and try again." Pair with a
+- **Errors say what + what next:** "Couldn't save - check your connection and try again." Pair with a
   **Retry** action where possible (§8).
 - **Match the verb to the action and its button** (Save → "Saved", Send → "Sent"), per [buttons.md](buttons.md) §8.
 - **No raw system/stack errors.** Map to human copy; never dump a status code or exception text.
@@ -220,8 +228,10 @@ At most **one** inline action, only when genuinely useful.
 
 - **Common actions:** **Undo** (reversible delete/change), **Retry** (after failure), **View** (jump to item).
 - **Keep it to one.** No multi-button toolbars; a real choice is a [modal](modals-dialogs.md) (§4).
-- **Style as a low-emphasis button/link** in the type color, per [buttons.md](buttons.md); never a solid button.
-- **Actions extend life.** A toast with an action must not auto-dismiss out from under the user —
+- **Style as the toast's own inline text action** in the type color. It is a component primitive rather
+  than a `.btn`, so it is neither of the two button looks and needs no border ([buttons.md](buttons.md)
+  §4.1). Never a solid button, and never a second one.
+- **Actions extend life.** A toast with an action must not auto-dismiss out from under the user -
   persist it (or a long timer that pauses on hover/focus, §5).
 - **Undo needs a real window.** The destructive operation must stay recoverable at least the toast's
   lifetime; don't show Undo you can't honor.
@@ -234,7 +244,7 @@ At most **one** inline action, only when genuinely useful.
   </div>
   <div class="toast-trailing">
     <button type="button" class="toast-action">Undo</button>
-    <button type="button" class="toast-close" aria-label="Dismiss">&times;</button>
+    <button type="button" class="icon-btn toast-close" aria-label="Dismiss">&times;</button>
   </div>
 </div>
 ```
@@ -249,32 +259,36 @@ Toasts appear without focus moving to them, so screen-reader users learn of them
 1. **Live region always present.** Render a persistent container with `aria-live` already in the DOM
    at load; injecting the region with the message can swallow the announcement.
 2. **Right politeness per type.** Success/info use `aria-live="polite"` (or `role="status"`); **errors**
-   use `aria-live="assertive"` (or `role="alert"`).
+   use `aria-live="assertive"` (or `role="alert"`). Two regions, one host: politeness decides how the
+   message is announced, never where it appears (§6).
 3. **Don't steal focus.** A toast must not move keyboard focus. Close and any action are reachable in
    tab order but not auto-focused.
 4. **Keyboard-operable.** Close (`✕`) and the action are real `<button>`s with visible `:focus-visible`
    rings; `Esc` may dismiss the most recent focused toast.
 5. **Never color-only.** Type is conveyed by icon + text (§3).
-6. **Respect reduced motion** — replace slide/scale with a fade (§10).
+6. **Respect reduced motion** - replace slide/scale with a fade (§10).
 7. **Readable timing.** Auto-dismiss pauses on hover/focus (§5); errors don't auto-dismiss.
 
 ```html
-<!-- One persistent region, present from page load -->
-<div class="toast-host" id="toastHost" aria-live="polite" aria-relevant="additions">
+<!-- One host, top right, present from page load. Both live regions live inside it, so an
+     error never lands in a different corner from a success (§6). Assertive first: an error
+     stacks above the informational toasts. -->
+<div class="toast-host" id="toastHost">
   <!-- Auto-shown only when the stack is deep (§6); spares undismissed actions -->
   <div class="toast-clear" id="toastClear" aria-hidden="true">
-    <button type="button" aria-label="Dismiss all notifications">Clear all</button>
+    <button type="button" class="btn btn-secondary btn-sm" aria-label="Clear all notifications">Clear all</button>
   </div>
+  <div class="toast-region" id="toastAssertive" aria-live="assertive" aria-relevant="additions"></div>
+  <div class="toast-region" id="toastPolite" aria-live="polite" aria-relevant="additions"></div>
 </div>
-<!-- Error toasts set role="alert" (assertive) on the individual toast element -->
 ```
 
 ---
 
 ## 10. Motion & behavior
 
-- **Enter:** quick slide-in from the edge + fade (≈150–200ms, ease-out).
-- **Exit:** fade + slight slide/scale out (≈150ms); reflow the stack smoothly.
+- **Enter:** quick slide-in from the edge + fade (~150-200ms, ease-out).
+- **Exit:** fade + slight slide/scale out (~150ms); reflow the stack smoothly.
 - **Stack shift:** remaining toasts animate to their new position rather than snapping.
 - **Keep it cheap.** Animate `transform` and `opacity` only.
 - **Reduced motion:** under `prefers-reduced-motion: reduce`, drop slide/scale, use an opacity fade.
@@ -287,27 +301,29 @@ Pairs with the button CSS ([buttons.md](buttons.md) §10). Type is set by a modi
 (`toast-success` / `toast-error` / `toast-warning` / `toast-info`) driving one `--toast-color`.
 
 ```css
-/* ===== Region (one per app, present at load) ===== */
+/* ===== Region (one per app, present at load) - TOP RIGHT, always (6) =====
+   Offset below the top bar so a toast never covers the top-bar utilities it sits beside.
+   --topbar-h is the shell's own height token (topbar-sidenav.md). */
 .toast-host {
-  position: fixed; top: var(--spacing-lg, 24px); right: var(--spacing-lg, 24px);
+  position: fixed;
+  top: calc(var(--topbar-h, 52px) + var(--spacing-sm, 8px));
+  right: var(--spacing-lg, 24px);
   display: flex; flex-direction: column-reverse;   /* newest nearest the top edge */
   gap: var(--toast-gap); z-index: var(--toast-z);
   width: min(var(--toast-width), calc(100vw - 2 * var(--spacing-lg, 24px)));
   pointer-events: none;                             /* let clicks pass between toasts */
 }
+/* The two live regions (9) sit INSIDE that one host, assertive first, so an error never
+   lands in a different corner from a success. */
+.toast-region { display: flex; flex-direction: column-reverse; gap: var(--toast-gap); }
 .toast-host > .toast { pointer-events: auto; }
 
-/* ===== "Clear all" pill — shown only when the stack is deep (§6) ===== */
+/* ===== "Clear all" - shown only when the stack is deep (§6) ===== */
 .toast-clear { order: 1000; align-self: flex-end; pointer-events: auto; display: none; }
 .toast-clear.is-visible { display: inline-flex; }
-.toast-clear button {
-  font: inherit; font-size: 0.8rem; font-weight: 600;
-  background: var(--color-surface); color: var(--color-text-muted);
-  border: 1px solid color-mix(in srgb, var(--color-text) 14%, transparent);
-  border-radius: 999px; padding: 5px 12px; cursor: pointer; box-shadow: var(--toast-shadow);
-}
-.toast-clear button:hover { color: var(--color-text); }
-.toast-clear button:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+/* The control itself is the shared .btn .btn-secondary .btn-sm from buttons.md §10. Only the
+   stack-level shadow is added here, since it floats over the page rather than sitting on a card. */
+.toast-clear .btn { box-shadow: var(--toast-shadow); }
 
 /* ===== Toast surface ===== */
 .toast {
@@ -324,7 +340,7 @@ Pairs with the button CSS ([buttons.md](buttons.md) §10). Type is set by a modi
   width: var(--toast-accent-bar); background: var(--toast-color);
 }
 
-/* ===== Type modifiers (§3) — theme-aware readable tokens, never raw hex ===== */
+/* ===== Type modifiers (§3) - theme-aware readable tokens, never raw hex ===== */
 .toast-success { --toast-color: var(--badge-success-fg); }
 .toast-error   { --toast-color: var(--badge-danger-fg); }
 .toast-warning { --toast-color: var(--badge-warning-fg); }
@@ -342,10 +358,10 @@ Pairs with the button CSS ([buttons.md](buttons.md) §10). Type is set by a modi
 .toast-title { margin: 0; font-weight: 600; font-size: 0.95rem; line-height: 1.3; }
 .toast-desc { margin: 2px 0 0; font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.4; }
 
-/* ===== Trailing controls — action + close on the right ===== */
+/* ===== Trailing controls - action + close on the right ===== */
 .toast-trailing { display: flex; align-items: center; gap: 4px; align-self: start; }
 
-/* ===== Inline action (one only, §8) — low-emphasis, type-colored ===== */
+/* ===== Inline action (one only, §8) - the toast's own text action, type-colored, not a .btn ===== */
 .toast-action {
   font: inherit; font-weight: 600; font-size: 0.85rem;
   background: none; border: none; padding: 4px 6px; border-radius: 6px;
@@ -355,6 +371,9 @@ Pairs with the button CSS ([buttons.md](buttons.md) §10). Type is set by a modi
 .toast-action:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 
 /* ===== Close (always present, §5) ===== */
+/* The close mark is the shared icon-only chrome control from buttons.md §4.1 (.icon-btn), which
+   carries the size, the hover tint, the focus ring, and the coarse-pointer 44px bump. Only its
+   placement inside the toast grid belongs here. */
 .toast-close {
   background: none; border: none; cursor: pointer; line-height: 1;
   font-size: 1.25rem; color: var(--color-text-muted); padding: 0 2px;
@@ -371,7 +390,7 @@ Pairs with the button CSS ([buttons.md](buttons.md) §10). Type is set by a modi
   .toast, .toast.is-leaving { animation: none; transition: opacity 0.15s linear; }
 }
 
-/* ===== Responsive (mobile-first) — full-width top bar on small/touch/tall screens ===== */
+/* ===== Responsive (mobile-first) - full-width top bar on small/touch/tall screens ===== */
 @media (max-aspect-ratio: 1/1) {
   .toast-host {
     left: var(--spacing-md, 16px); right: var(--spacing-md, 16px); top: var(--spacing-md, 16px);
@@ -415,7 +434,7 @@ const ToastHost = (() => {
       <div class="toast-body"><p class="toast-title"></p>${desc ? '<p class="toast-desc"></p>' : ''}</div>
       <div class="toast-trailing">
         ${action ? '<button type="button" class="toast-action"></button>' : ''}
-        <button type="button" class="toast-close" aria-label="Dismiss">&times;</button>
+        <button type="button" class="icon-btn toast-close" aria-label="Dismiss">&times;</button>
       </div>`;
     el.querySelector('.toast-title').textContent = title;
     if (desc) el.querySelector('.toast-desc').textContent = desc;
@@ -471,7 +490,7 @@ const ToastHost = (() => {
 
 // Usage
 ToastHost.success('Contact saved', { desc: 'Jane Doe was added to your pipeline.' });
-ToastHost.error('Couldn’t send invite', { desc: 'Check your connection and try again.', action: { label: 'Retry', onClick: resend } });
+ToastHost.error('Couldn't send invite', { desc: 'Check your connection and try again.', action: { label: 'Retry', onClick: resend } });
 ToastHost.success('Contact deleted', { action: { label: 'Undo', onClick: restore } });
 ```
 
@@ -486,7 +505,7 @@ ToastHost.success('Contact deleted', { action: { label: 'Undo', onClick: restore
 - [ ] Type is conveyed by **icon + text**, never color alone.
 - [ ] Auto-dismiss **pauses on hover and focus**; **errors don't auto-dismiss**.
 - [ ] `prefers-reduced-motion` replaces slide/scale with a fade.
-- [ ] Copy is human-readable — no raw status codes / stack traces.
+- [ ] Copy is human-readable - no raw status codes / stack traces.
 - [ ] Toasts don't permanently cover primary actions or an open modal's footer.
 - [ ] On touch/tall screens, toasts reflow full-width and stay clear of fixed bottom nav.
 
@@ -496,12 +515,12 @@ ToastHost.success('Contact deleted', { action: { label: 'Undo', onClick: restore
 
 | ✅ Do | ❌ Don't | Why |
 |---|---|---|
-| Use a toast to confirm a discrete action's result | Use a toast for must-acknowledge decisions | Toasts are transient and missable — use a modal (§4) |
+| Use a toast to confirm a discrete action's result | Use a toast for must-acknowledge decisions | Toasts are transient and missable - use a modal (§4) |
 | Auto-dismiss success/info; **persist errors** | Auto-dismiss an error or an Undo toast | The user may miss it or lose the action (§5) |
 | Convey type with icon **+** color **+** text | Rely on the accent color alone | Fails color-blind users (§3, §9) |
 | Keep one short message (+ optional one action) | Cram paragraphs or multiple buttons in a toast | That's a banner or modal |
 | Pause the timer on hover/focus | Cut a toast off while it's being read or reached | Accessibility + usability (§5) |
-| Stack in one corner, cap at ~3–4 | Scatter toasts or flood the screen | Predictability (§6) |
+| Stack at the top right, cap at ~3-4 | Put a toast in any other corner, or scatter them by type | Predictability: one place to look, always (§6) |
 | Write human error copy with a next step | Dump server/stack errors into the toast | Users can't act on raw errors (§7) |
 | Keep the surface light, color on the accent bar | Flood the whole toast with a saturated color | Preserves text contrast (§1, §3) |
 
@@ -515,15 +534,15 @@ When generating any success/error/feedback message, the assistant **must**:
    [modal](modals-dialogs.md); field problem → [inline form error](forms.md); standing condition → banner (§4).
 2. **Pick the type by meaning** (success / error / warning / info) with the matching token color + icon
    + wording (§3). Never color-only.
-3. **Set duration by type:** success ≈ 4s, info ≈ 5s, **errors and action-toasts persist** with a manual
+3. **Set duration by type:** success ~ 4s, info ~ 5s, **errors and action-toasts persist** with a manual
    close; pause auto-dismiss on hover/focus (§5).
 4. **Render one persistent `aria-live` region** at load, `polite` for success/info and
    `assertive`/`role="alert"` for errors, and **never auto-focus** the toast (§9).
-5. **Allow at most one inline action** (Undo / Retry / View), styled low-emphasis per [buttons.md](buttons.md); more is a modal (§8).
-6. **Stack in one corner** (default top-right), cap the visible stack, reflow **full-width on
+5. **Allow at most one inline action** (Undo / Retry / View), styled as the toast's own inline text action in the type color - a component primitive, not a `.btn` ([buttons.md](buttons.md) §4.1); more is a modal (§8).
+6. **Stack at the top right** and nowhere else, cap the visible stack, reflow **full-width on
    small/touch/tall screens** via width and/or aspect-ratio breakpoints (§6, §11).
 7. **Use the design tokens**; keep the surface light with the type color on the accent bar/icon (§1).
-8. **Write human copy** — outcome first, next step for errors, no raw status codes (§7).
+8. **Write human copy** - outcome first, next step for errors, no raw status codes (§7).
 9. **Honor `prefers-reduced-motion`** with a fade fallback (§10).
 
 ---

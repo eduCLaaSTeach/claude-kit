@@ -131,7 +131,7 @@ The scale, weights, and body line-height above are approved (not open). Decide o
 
 **Do**
 - Use `--font-heading` for headings and `--font-body` for body.
-- Size every text element from the scale tokens (`--text-display` … `--text-micro`).
+- Size every text element from the scale tokens (`--text-display` ... `--text-micro`).
 - Set body copy at 13px (`--text-body`) with line-height 1.5.
 - Apply weights via `--font-weight-*` tokens, following the role mapping.
 

@@ -2,7 +2,7 @@
 
 Claude must make integration boundaries resilient whenever a change calls a dependency the service does not control.
 
-Conditional: applies only when code calls a dependency across a process or network boundary (a database, external API, queue, model/LLM, or another service). It does not apply to purely in-process work, and does not override `.claude/rules/secret-handling.md`, `.claude/rules/schema-mcp.md`, `.claude/rules/production-readiness.md`, or the DDL restrictions.
+Conditional: applies only when code calls a dependency across a process or network boundary (a database, external API, queue, model/LLM, or another service). It does not apply to purely in-process work, and does not override `.claude/rules/secret-handling.md`, `.claude/rules/database-schema.md`, `.claude/rules/production-readiness.md`, or the DDL restrictions.
 
 This file is the primary home for idempotency and retry-safety guidance; other rules cross-reference here.
 
@@ -33,6 +33,7 @@ Retries are only as safe as the idempotency behind them. Before adding a retry, 
 
 - Define explicit behavior for a dependency being down: degrade to a reduced result, queue for later, or return a clear, actionable error.
 - Never crash silently and never hang. A failed dependency surfaces as a handled outcome through the project's established error/result pattern.
+- A call that never reached the dependency and a call the dependency refused are two outcomes, not one. Record them separately even when the caller sees the same message, because the remedy is on opposite sides of the boundary: one is a network, TLS, or certificate problem in this deployment, the other is a credential, contract, or entitlement problem at the far end. Collapsing them sends whoever is debugging to the wrong side first. The outcome names are the project's confirmed choice.
 
 ## Async And Multi-Step Flows
 

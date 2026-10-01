@@ -55,7 +55,7 @@ The logo lives in the sidebar brand block, not the top bar. Use the wide wordmar
 <svg class="ic" aria-hidden="true"><use href="#i-bell" /></svg>
 ```
 
-**Accessibility:** decorative icons get `aria-hidden="true"`. An icon that is the only content of a control (icon-only button) needs an accessible name on the control (`aria-label` / `title`) and usually a hover label.
+**Accessibility:** decorative icons get `aria-hidden="true"`. An icon that is the only content of a control needs an accessible name on it (`aria-label`), and icon-only is limited to the closed chrome list in `buttons.md` §4.1 - an action the user picks between, including every actions-column control, carries its visible word beside the icon (`buttons.md` §4.2).
 
 ---
 
@@ -85,6 +85,12 @@ Frequently-used icon *concepts* and their meaning. This is the **catalog** of se
 | A filter funnel icon (outlined / solid) | Filter (inactive / active) |
 | A sun / moon icon | Appearance / theme switch (light / dark) |
 | A close (x) icon | Close / dismiss |
+| An eye icon | View / open read-only |
+| A pencil icon | Edit |
+| A copy icon | Duplicate |
+| A trash icon | Delete |
+| A restore icon | Restore from the recycle bin |
+| A kebab / horizontal-dots icon | Row overflow ("More"), only past about three row actions |
 
 ---
 
@@ -94,7 +100,7 @@ Before generating UI, confirm required assets are in place: the **logo/favicon p
 
 If an asset is missing:
 1. Generate with a placeholder.
-2. Mark it: `<!-- ASSET MISSING: [asset] — replace with actual path -->`.
+2. Mark it: `<!-- ASSET MISSING: [asset] - replace with actual path -->`.
 3. Tell the user plainly: which asset, where it's expected, and the impact.
 
 ```
@@ -119,7 +125,7 @@ Provide the file or correct path to finalise.
 - Use the bundled per-theme logos unmodified (wide `height: 22px; width: auto`; C2S mark in a 40x34 `object-fit: contain` slot), copied from the skill's asset pack.
 - Swap the logo and favicon variants with the effective theme.
 - Use the bundled SVG icon registry exclusively, outline style by default, sized via `font-size`.
-- Give decorative icons `aria-hidden`; give icon-only controls an accessible name.
+- Give decorative icons `aria-hidden`; give icon-only chrome controls an accessible name, and give every labeled action its word.
 
 **Don't**
 - Recolour, restretch, plate, or re-typeset the logo, or source it from anywhere but the bundled pack.

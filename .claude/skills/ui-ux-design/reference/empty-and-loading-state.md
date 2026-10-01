@@ -4,7 +4,7 @@ Reference for AI-assisted development: build *no-data*, *no-results*, and *loadi
 moments before and without data stay consistent, calm, and recoverable.
 
 > **TL;DR for the AI**
-> 1. **Loading = skeleton, not spinner (ENFORCED — every region/content load).** Mirror the shape of
+> 1. **Loading = skeleton, not spinner (ENFORCED - every region/content load).** Mirror the shape of
 >    the content coming; the **table skeleton is the same `dt-skeleton-bar` shimmer** in
 >    [tables.md](tables.md) §12, keeping surrounding chrome (header, toolbar) visible. The **only**
 >    spinner allowed is a tiny in-control wait (button in-flight, field validating, §3.2).
@@ -22,7 +22,7 @@ moments before and without data stay consistent, calm, and recoverable.
 ## Contents
 
 1. [Design tokens (source of truth)](#1-design-tokens-source-of-truth)
-2. [Two scopes — page vs table/region](#2-two-scopes--page-vs-tableregion)
+2. [Two scopes - page vs table/region](#2-two-scopes--page-vs-tableregion)
 3. [Loading states (skeleton, ENFORCED)](#3-loading-states-skeleton-enforced)
 4. [Empty states (ENFORCED)](#4-empty-states-enforced)
 5. [Choosing the icon](#5-choosing-the-icon)
@@ -44,26 +44,26 @@ Buttons in an empty state follow [buttons.md](buttons.md); icons follow [assets.
 
 ```css
 :root {
-    /* Brand palette (approved — canonical: design-tokens.md) */
+    /* Brand palette (approved - canonical: design-tokens.md) */
     --color-primary: #193E6B;                  /* Midnight Blue */
     --color-accent: #B3A125;                   /* Green Gold */
-    --color-secondary-violet: #7F3F98;         /* Cadmium Violet — secondary buttons only */
-    --color-secondary-blue: #448E9D;           /* Jelly Bean Blue — non-interactive only */
+    --color-secondary-violet: #7F3F98;         /* Cadmium Violet - badge/chip only, never a button fill */
+    --color-secondary-blue: #448E9D;           /* Jelly Bean Blue - non-interactive only */
     --color-secondary-sunray: #E9AC53;         /* Sunray */
     --color-success: #5F8025;                  /* Avocado Green */
-    --color-danger: #991547;                   /* Violet-Red — error state only; error TEXT uses --badge-danger-fg */
+    --color-danger: #991547;                   /* Violet-Red - error state only; error TEXT uses --badge-danger-fg */
     --color-background: #E8DFD0;               /* canvas (dark: #1A2E46) */
     --color-surface: #FFFFFF;                  /* dark: #253E5D */
     --color-text: #1E2E42;                     /* ink (dark: #E9EFF6) */
     --color-text-muted: #4D5E75;               /* dark: #A3B2C5 */
-    --card-border: #E8E2D8;                    /* card border (dark: rgba(255,255,255,0.10)) — cards are FLAT at rest */
+    --card-border: #E8E2D8;                    /* card border (dark: rgba(255,255,255,0.10)) - cards are FLAT at rest */
 
     /* State tokens */
     --state-pad: 48px 24px;               /* vertical breathing room for empty/error */
     --state-icon-size: 48px;              /* illustration icon (assets.md) */
     --state-max-width: 420px;             /* copy column inside an empty/error state */
 
-    /* Skeleton — SAME recipe as tables' dt-skeleton-bar (tables.md §12) */
+    /* Skeleton - SAME recipe as tables' dt-skeleton-bar (tables.md §12) */
     --skel-base:  color-mix(in srgb, var(--color-text) 8%, transparent);
     --skel-sheen: color-mix(in srgb, var(--color-text) 15%, transparent);
     --skel-radius: 6px;
@@ -71,13 +71,13 @@ Buttons in an empty state follow [buttons.md](buttons.md); icons follow [assets.
 }
 ```
 
-**Light rules (ENFORCED):** empty/error states are **muted and centered** — one icon, a dark
+**Light rules (ENFORCED):** empty/error states are **muted and centered** - one icon, a dark
 primary-toned title, a muted line, at most one or two buttons. No saturated fills, large
 illustrations, or gradients. The skeleton is a **neutral grey shimmer** (never a brand color).
 
 ---
 
-## 2. Two scopes — page vs table/region
+## 2. Two scopes - page vs table/region
 
 The **same three states** (loading · empty · error) appear at two scopes; the message content is
 identical, only the **container** and where it renders differ. Decide scope first.
@@ -89,16 +89,16 @@ identical, only the **container** and where it renders differ. Decide scope firs
 
 - **Never replace the whole page** for a table's state; keep the page header, toolbar, and search so
   the user can add, clear a filter, or retry.
-- **Never shift layout.** Render inside the slot the content would occupy — same width, no popover, no
+- **Never shift layout.** Render inside the slot the content would occupy - same width, no popover, no
   jump. Reserve the height so the page doesn't reflow when data arrives.
 - **One scope owns the message.** Don't show a page-level "No data" *and* a table-level "No data" at
-  once — pick the smallest scope that's actually empty.
+  once - pick the smallest scope that's actually empty.
 
 ```
 PAGE scope                                  TABLE scope (tables.md §7)
 ┌─ shell ─────────────────────────┐         ┌─ .dt-card ──────────────────────┐
 │ sidebar │  Page header          │         │  Modules        12 found  [+Add] │ ← toolbar kept
-│         │ ┌───────────────────┐ │         │  🔍 Search…                      │ ← search kept
+│         │ ┌───────────────────┐ │         │  🔍 Search...                      │ ← search kept
 │         │ │      [icon 48]    │ │         │ ┌ NAME  CODE  STATUS  ACTIONS ─┐ │ ← thead kept
 │         │ │   No campaigns yet│ │         │ │     [icon 48]                │ │ ← state in
 │         │ │   [ + New campaign]│ │         │ │     No modules yet           │ │   place of
@@ -111,12 +111,12 @@ PAGE scope                                  TABLE scope (tables.md §7)
 
 ## 3. Loading states (skeleton, ENFORCED)
 
-**Every loading state uses a skeleton (ENFORCED).** Any loading region or content — page, route,
-panel, table, list, card grid, detail view, dashboard section — shows a **skeleton** mirroring the
+**Every loading state uses a skeleton (ENFORCED).** Any loading region or content - page, route,
+panel, table, list, card grid, detail view, dashboard section - shows a **skeleton** mirroring the
 shape of the content coming. It tells the user *what* is loading and preserves layout; a bare spinner
 hides structure and shifts the page.
 
-**The one exception:** a small bounded wait *inside a single control* with nothing to skeletonize — a
+**The one exception:** a small bounded wait *inside a single control* with nothing to skeletonize - a
 button's in-flight state, a field validating, a "load more" row (§3.2). Everywhere else, a spinner is
 not acceptable.
 
@@ -127,33 +127,33 @@ not acceptable.
 - **No layout shift.** The skeleton occupies the same footprint as the loaded content.
 - **One shimmer recipe.** The shared grey shimmer (§1, same as [tables.md](tables.md)'s `dt-skeleton-bar`);
   never tint it a brand color.
-- **Honor `prefers-reduced-motion`** — slow the shimmer right down (§7).
+- **Honor `prefers-reduced-motion`** - slow the shimmer right down (§7).
 
-### 3.2 Skeleton is the rule — the one exception (ENFORCED)
+### 3.2 Skeleton is the rule - the one exception (ENFORCED)
 | Use | When |
 |---|---|
-| **Skeleton** *(ENFORCED — always)* | **Any region or content load** — page, route, panel, table, list, card grid, detail view, dashboard. Mirror the shape of what's coming; never a spinner. |
-| **Inline spinner** *(only exception)* | A **small, bounded wait inside a single control** with no layout to skeletonize — a button's in-flight state ([buttons.md](buttons.md)), a field validating ([forms.md](forms.md)), a "load more" row. |
+| **Skeleton** *(ENFORCED - always)* | **Any region or content load** - page, route, panel, table, list, card grid, detail view, dashboard. Mirror the shape of what's coming; never a spinner. |
+| **Inline spinner** *(only exception)* | A **small, bounded wait inside a single control** with no layout to skeletonize - a button's in-flight state ([buttons.md](buttons.md)), a field validating ([forms.md](forms.md)), a "load more" row. |
 
 A full-page or full-panel spinner is **not allowed** where a skeleton can model the layout (every
 structured region). Even an unknown-shape region gets a **generic skeleton block**, never a centered
 spinner.
 
 ### 3.3 Table loading (skeleton rows)
-Canonical case, owned by [tables.md](tables.md) §7 — **match it exactly**.
+Canonical case, owned by [tables.md](tables.md) §7 - **match it exactly**.
 
 - Render **skeleton rows in place of `<tbody>`**, **keeping the column `<thead>` visible**; never a
   spinner that hides it.
 - Each skeleton cell is a `dt-skeleton-bar` sized to roughly match its column (short for a code, wide
   for a name, pill-width for a status).
-- Show **~5–8 rows** (or the page size, capped), enough to fill the viewport, not the full 25.
-- **Don't skeleton the toolbar, search, or pagination** — those stay live; render in place of the body,
+- Show **~5-8 rows** (or the page size, capped), enough to fill the viewport, not the full 25.
+- **Don't skeleton the toolbar, search, or pagination** - those stay live; render in place of the body,
   never a layout-shifting popover.
 
 ### 3.4 Page / region loading (skeleton layout)
 Skeleton the **layout primitives** the page is about to show:
 - **Detail page:** a title bar, a couple of meta lines, then paragraph bars.
-- **Card grid:** a grid of card-shaped outlines, each with a title bar + 2–3 text bars.
+- **Card grid:** a grid of card-shaped outlines, each with a title bar + 2-3 text bars.
 - **Dashboard section:** stat-tile outlines + a chart-area block.
 - **List / table page:** a page-title bar + optional stat-tile row, then the **table card** loaded per
   §3.3 / [tables.md](tables.md) §7 (visible column `<thead>` + skeleton rows). Only the page chrome
@@ -161,7 +161,7 @@ Skeleton the **layout primitives** the page is about to show:
 
 Keep the page header / breadcrumb live; skeleton only the content region.
 
-**Cold load vs data refresh.** §3.4 wraps a whole route arriving cold — skeleton the page chrome
+**Cold load vs data refresh.** §3.4 wraps a whole route arriving cold - skeleton the page chrome
 around the table. The **table itself always loads per §3.3 / [tables.md](tables.md) §7**. When only
 the table's **data** refreshes on an already-painted page, render the §3.3 table alone.
 
@@ -169,7 +169,7 @@ the table's **data** refreshes on an already-painted page, render the §3.3 tabl
 
 ## 4. Empty states (ENFORCED)
 
-Shown when a region has **no data to display**. Never a blank box — it **names** what's missing and
+Shown when a region has **no data to display**. Never a blank box - it **names** what's missing and
 offers **the next step**.
 
 ### 4.1 Anatomy
@@ -177,9 +177,9 @@ offers **the next step**.
         ┌─────────────────┐
         │   [ icon 48 ]   │   ← icon: bundled icon registry, outlined, 48px (assets.md), muted
         │  No modules yet │   ← title: short, plain (heading typeface 16/600)
-        │  Add your first │   ← body: one line — what this is / why it's empty (muted)
+        │  Add your first │   ← body: one line - what this is / why it's empty (muted)
         │  module to begin│
-        │  [ + Add module]│   ← action: ONE primary (buttons.md); optional secondary link
+        │  [ + Add module]│   ← action: ONE solid btn-primary (buttons.md); a second one is btn-secondary
         └─────────────────┘
 ```
 
@@ -187,23 +187,26 @@ offers **the next step**.
 |---|---|
 | **Icon** | A single outlined glyph from the bundled icon registry at **48px** via `font-size` ([assets.md](assets.md)). Muted (`--color-text-muted`), `aria-hidden`. One icon, not a scene. |
 | **Title** | One short line in `--font-heading`, ~16px/600. States the absence plainly: "No modules yet", "No results". |
-| **Body** | At most **one sentence**, muted — what the area holds or *why* it's empty and what to do. Optional. |
-| **Action** | **One** primary button for the obvious next step (no-data case). Optionally one low-emphasis secondary. Omit when there's no action. |
+| **Body** | At most **one sentence**, muted - what the area holds or *why* it's empty and what to do. Optional. |
+| **Action** | **One** action for the obvious next step. In the no-data case it is the solid `btn-primary` that starts the create path; any second action, and every action in a no-results state, is `btn-secondary` ([buttons.md](buttons.md) §4). Omit when there's no action. |
 
 **Render only functional UI** ([../SKILL.md](../SKILL.md)): if the primary action isn't wired up,
 show the empty state without the button rather than a dead control.
 
-### 4.2 The three flavors — pick by *why* it's empty
+### 4.2 The three flavors - pick by *why* it's empty
 | Flavor | Trigger | Icon | Title | Action |
 |---|---|---|---|---|
-| **No data yet** | Nothing created in this collection | domain/object icon (document, apps/grid, people) | "No *<things>* yet" | **Primary** "Add *<thing>*" — the create path |
-| **No results** | A search/filter returned nothing (data exists, hidden by the query) | a search icon | "No matches for '<query>'" | **"Clear filters"** / "Clear search" — **never** "Add" |
+| **No data yet** | Nothing created in this collection | domain/object icon (document, apps/grid, people) | "No *<things>* yet" | solid **`btn-primary`** "Add *<thing>*" - the create path |
+| **No results** | A search/filter returned nothing (data exists, hidden by the query) | a search icon | "No matches for '<query>'" | **`btn-secondary`** "Clear filters" / "Clear search" - **never** "Add", and no solid button here |
 | **Post-action / cleared** | The user emptied it themselves | a checkmark/success icon or the object icon | "All clear" / "No *<things>* left" | Usually none, or the create path |
 
 - **No-data ≠ no-results.** If a filter/search is active and hid everything, that's **no-results** →
   offer **Clear filters**. "Add" here is wrong: the data exists, the query hid it.
 - **Echo the query.** A no-results state names what was searched ("No matches for *acme*").
 - **One action, the obvious one.** Don't stack three CTAs.
+- **Only a genuine main action is solid.** Creating the first record commits new data, so that one is
+  solid. Clearing a filter only changes what is on screen, so a no-results state carries no solid
+  button at all ([buttons.md](buttons.md) §4).
 
 ### 4.3 Page vs table empty (same flavors, different container)
 - **Table empty** → render in place of `<tbody>`, keep toolbar + search + `<thead>` (§2,
@@ -216,10 +219,10 @@ show the empty state without the button rather than a dead control.
 
 Icons come from the skill's bundled icon registry (central inline-SVG sprite) in its outlined style,
 referenced by symbol id and sized via `font-size` ([assets.md](assets.md)). One registry across the
-suite — **no emoji, mixed libraries, or ad-hoc SVG**.
+suite - **no emoji, mixed libraries, or ad-hoc SVG**.
 
 ```html
-<!-- Empty-state illustration icon — a sprite glyph, 48px via font-size (assets.md) -->
+<!-- Empty-state illustration icon - a sprite glyph, 48px via font-size (assets.md) -->
 <svg class="state-icon" aria-hidden="true"><use href="#i-document" /></svg>
 ```
 
@@ -244,14 +247,15 @@ by meaning; don't reach outside the library. If the icon isn't available, follow
 
 ## 6. Error state (the third sibling)
 
-Empty and loading travel with **error** — the same slot, when the data **failed to load**. Ship it
+Empty and loading travel with **error** - the same slot, when the data **failed to load**. Ship it
 alongside the other two.
 
 - **Icon:** a disconnected-plug / error-circle icon, 48px, in `--color-danger`.
 - **Title + line:** what failed, in human terms ("Couldn't load modules"). No raw status codes or stack
   traces (route those per [toasts.md](toasts.md) §7).
-- **Action:** a **Retry** primary button. Keep the toolbar/search live (table scope) so the user can
-  change the query.
+- **Action:** **Retry**, the state's one main action, so it is the solid `btn-primary`; anything beside it
+  (a `Clear filters` in table scope) is `btn-secondary`. Keep the toolbar/search live (table scope) so the
+  user can change the query.
 - **Don't confuse error with empty.** "Failed to load" (error → Retry) is not "there's nothing here"
   (empty → Add/Clear). A failed fetch must never silently render as an empty state.
 
@@ -260,11 +264,11 @@ alongside the other two.
 ## 7. Full CSS reference (copy-paste ready)
 
 `state-`/`skeleton-`-namespaced. The skeleton shimmer is the **same recipe** as [tables.md](tables.md)'s
-`dt-skeleton-bar` (§12) — reuse `dt-skeleton-bar` inside a table; use `.skeleton` for page/region
+`dt-skeleton-bar` (§12) - reuse `dt-skeleton-bar` inside a table; use `.skeleton` for page/region
 scopes. Uses `color-mix()` (current evergreen browsers).
 
 ```css
-/* ===== Skeleton primitive (shared shimmer — matches dt-skeleton-bar) ===== */
+/* ===== Skeleton primitive (shared shimmer - matches dt-skeleton-bar) ===== */
 .skeleton {
   height: 12px; border-radius: var(--skel-radius);
   background: linear-gradient(90deg, var(--skel-base) 25%, var(--skel-sheen) 37%, var(--skel-base) 63%);
@@ -272,7 +276,7 @@ scopes. Uses `color-mix()` (current evergreen browsers).
   animation: skeleton-shimmer var(--skel-speed) ease infinite;
 }
 @keyframes skeleton-shimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
-/* Width/shape helpers — compose to mirror the real content */
+/* Width/shape helpers - compose to mirror the real content */
 .skeleton--text   { height: 12px; }
 .skeleton--title  { height: 20px; width: 40%; }
 .skeleton--pill   { height: 22px; width: 72px; border-radius: 999px; }
@@ -285,7 +289,7 @@ scopes. Uses `color-mix()` (current evergreen browsers).
 .skeleton-stack { display: flex; flex-direction: column; gap: 12px; }
 .skeleton-card {
   background: var(--color-surface); border-radius: var(--radius-lg, 12px);
-  border: 1px solid var(--card-border);          /* FLAT at rest — no resting shadow */
+  border: 1px solid var(--card-border);          /* FLAT at rest - no resting shadow */
   padding: 20px; display: flex; flex-direction: column; gap: 12px;
 }
 .skeleton-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
@@ -314,7 +318,7 @@ scopes. Uses `color-mix()` (current evergreen browsers).
 /* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) { .skeleton { animation-duration: 2.6s; } }
 
-/* ===== Responsive (mobile-first) — base targets small screens; widen at larger viewports.
+/* ===== Responsive (mobile-first) - base targets small screens; widen at larger viewports.
    Small screens: single-column grid, tighter padding; sidebar goes off-canvas (topbar-sidenav.md).
    Keep action buttons ≥44px touch targets. */
 @media (max-width: 640px), (max-aspect-ratio: 1/1) {
@@ -328,27 +332,27 @@ scopes. Uses `color-mix()` (current evergreen browsers).
 
 ## 8. Full HTML reference
 
-Icons are sprite references from the bundled icon registry (§5, [assets.md](assets.md)) —
-`<svg class="state-icon" aria-hidden="true"><use href="#i-…" /></svg>`, sized via `font-size`. In a
+Icons are sprite references from the bundled icon registry (§5, [assets.md](assets.md)) -
+`<svg class="state-icon" aria-hidden="true"><use href="#i-..." /></svg>`, sized via `font-size`. In a
 framework, keep the same registry glyph and markup contract.
 
-### 8.1 Table loading — skeleton rows in place of `<tbody>` (keep `<thead>`)
+### 8.1 Table loading - skeleton rows in place of `<tbody>` (keep `<thead>`)
 ```html
 <tbody aria-live="polite" aria-busy="true">
   <!-- repeat ~6 rows; bars sized to the columns. Bars are block-level <div>s (matching tables.md §7)
-       — an inline <span> in a <td> collapses to zero height. -->
+       - an inline <span> in a <td> collapses to zero height. -->
   <tr>
     <td><div class="dt-skeleton-bar" style="width:70%"></div></td>   <!-- NAME -->
     <td><div class="dt-skeleton-bar" style="width:50%"></div></td>   <!-- CODE -->
     <td><div class="dt-skeleton-bar" style="width:55%"></div></td>   <!-- STATUS -->
     <td><div class="dt-skeleton-bar" style="width:60%"></div></td>   <!-- OWNER -->
-    <td><div class="dt-skeleton-bar" style="width:32px"></div></td>  <!-- ACTIONS -->
+    <td><div class="dt-skeleton-bar" style="width:120px"></div></td>  <!-- ACTIONS: labeled buttons -->
   </tr>
-  <!-- … 5 more … -->
+  <!-- ... 5 more ... -->
 </tbody>
 ```
 
-### 8.2 Page/region loading — skeleton layout
+### 8.2 Page/region loading - skeleton layout
 ```html
 <div class="skeleton-card" aria-busy="true" aria-label="Loading">
   <span class="skeleton skeleton--title"></span>
@@ -364,11 +368,11 @@ framework, keep the same registry glyph and markup contract.
     <span class="skeleton skeleton--text"></span>
     <span class="skeleton skeleton--text skeleton--w-75"></span>
   </div>
-  <!-- … repeat … -->
+  <!-- ... repeat ... -->
 </div>
 ```
 
-### 8.3 Empty — no data yet (page scope)
+### 8.3 Empty - no data yet (page scope)
 ```html
 <div class="state state--page" role="status">
   <svg class="state-icon" aria-hidden="true"><use href="#i-apps" /></svg>
@@ -380,7 +384,7 @@ framework, keep the same registry glyph and markup contract.
 </div>
 ```
 
-### 8.4 Empty — no results (table scope, in place of `<tbody>`)
+### 8.4 Empty - no results (table scope, in place of `<tbody>`)
 ```html
 <tbody>
   <tr class="state-row">
@@ -398,7 +402,7 @@ framework, keep the same registry glyph and markup contract.
 </tbody>
 ```
 
-### 8.5 Error — failed to load (table scope)
+### 8.5 Error - failed to load (table scope)
 ```html
 <tbody>
   <tr class="state-row">
@@ -441,7 +445,7 @@ framework, keep the same registry glyph and markup contract.
 |---|---|---|
 | Use a **skeleton** that mirrors the content shape | Blank the region behind a full-page spinner | The spinner hides structure and shifts layout (§3) |
 | Reuse the **shared shimmer** (`dt-skeleton-bar` / `.skeleton`) | Invent a new loading animation or tint it a brand color | One calm, consistent loading language (§1) |
-| Keep **chrome live** while the data region loads | Skeleton the toolbar, search, header too | The user should recognize the page mid-load (§2–§3) |
+| Keep **chrome live** while the data region loads | Skeleton the toolbar, search, header too | The user should recognize the page mid-load (§2-§3) |
 | Distinguish **no-data** (+Add) from **no-results** (+Clear) | Show "Add" when a filter hid the rows | The data exists; the query hid it (§4.2) |
 | Use an **outlined** registry icon at **48px** | Use an emoji, another library, or a custom SVG scene | One icon library, one style (§5, assets.md) |
 | Offer **one** obvious action | Stack three CTAs in an empty state | Empty states guide, they don't menu (§4.1) |
@@ -455,17 +459,18 @@ framework, keep the same registry glyph and markup contract.
 
 When generating any empty / loading (or its sibling error) state, the assistant **must**:
 
-1. **Pick the scope first** — **page/region** or **table** (§2). A table's state renders in place of
+1. **Pick the scope first** - **page/region** or **table** (§2). A table's state renders in place of
    `<tbody>` and keeps the card, toolbar, search, and `<thead>`; it never replaces the whole page.
 2. **Load with a skeleton, not a spinner (ENFORCED for every region/content load)** (§3), mirroring the
-   content shape and reusing the **shared shimmer** — `dt-skeleton-bar` in a table ([tables.md](tables.md)
+   content shape and reusing the **shared shimmer** - `dt-skeleton-bar` in a table ([tables.md](tables.md)
    §12), `.skeleton` for page/region scope. The **only** spinner permitted is a small in-control wait
    (button in-flight, field validating, "load more" row, §3.2); never a full-page or full-panel spinner.
 3. **Build the empty state** as **icon (48px) + title + one line + one action** (§4.1), the icon an
    outlined sprite glyph from the bundled icon registry sized via `font-size` ([assets.md](assets.md));
    never emoji or another library.
-4. **Choose the empty flavor by *why* it's empty** (§4.2): **no-data-yet** → primary "Add"; **no-results**
-   → "Clear filters" and echo the query, **never** "Add"; **post-action** → usually no action.
+4. **Choose the empty flavor by *why* it's empty** (§4.2): **no-data-yet** → the solid `btn-primary` "Add";
+   **no-results** → `btn-secondary` "Clear filters" and echo the query, **never** "Add"; **post-action** →
+   usually no action.
 5. **Ship error alongside** (§6) with a 48px danger icon and a **Retry**; never render a failed load as
    an empty state.
 6. **Apply "render only functional UI"** ([../SKILL.md](../SKILL.md)): omit a CTA whose action isn't
@@ -482,10 +487,10 @@ When generating any empty / loading (or its sibling error) state, the assistant 
 ```
 What's the state of this region?
 │
-├─ Data is on its way ─────────▶ LOADING  →  SKELETON (ENFORCED — every region/content load)
+├─ Data is on its way ─────────▶ LOADING  →  SKELETON (ENFORCED - every region/content load)
 │   ├─ table ........... skeleton rows in place of <tbody>, keep <thead>  (dt-skeleton-bar)
 │   ├─ page/region ..... skeleton title + text bars / card-grid outlines  (.skeleton)
-│   ├─ unknown shape ... a generic skeleton block — still NOT a spinner
+│   ├─ unknown shape ... a generic skeleton block - still NOT a spinner
 │   └─ EXCEPTION: a tiny bounded wait INSIDE one control (button in-flight,
 │                 field validating, "load more" row) ─▶ inline spinner (buttons.md / forms.md)
 │
@@ -495,7 +500,7 @@ What's the state of this region?
 │   └─ User just cleared/deleted all . "All clear"            + (usually no action)
 │
 └─ Failed to load ─────────────▶ ERROR (danger icon 48px + human message + RETRY)
-       └─ not the same as empty — a failure is not an absence
+       └─ not the same as empty - a failure is not an absence
 
 Scope: only the table empty? ──▶ keep the page header/toolbar/search; state replaces <tbody>.
        whole route/section empty? ▶ centered .state--page in the content area; keep the shell.

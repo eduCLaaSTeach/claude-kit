@@ -2,7 +2,7 @@
 
 Claude must keep a production service observable, alertable, and recoverable, and follow a disciplined incident-response and rollback path whenever a change touches a running service.
 
-Conditional: applies only when the project runs a production service. It does not override `.claude/rules/secret-handling.md`, `.claude/rules/schema-mcp.md`, `.claude/rules/production-readiness.md`, or the DDL restrictions.
+Conditional: applies only when the project runs a production service. It does not override `.claude/rules/secret-handling.md`, `.claude/rules/database-schema.md`, `.claude/rules/production-readiness.md`, or the DDL restrictions.
 
 ## Assume No Operational Defaults
 
@@ -36,7 +36,7 @@ Treat rollback as distinct classes; the right one depends on what changed.
 | Rollback class | What it reverts | How it is performed |
 | --- | --- | --- |
 | Application rollback | A code/runtime regression | Redeploy the prior known-good revision |
-| Schema rollback | A schema change | Apply the paired down-migration; see `.claude/rules/schema-mcp.md` |
+| Schema rollback | A schema change | Apply the paired down-migration; see `.claude/rules/database-schema.md` |
 | Behavior / flag rollback | A behavior change behind a flag or release | Flip the flag off or revert to the prior released version |
 
 - Choose the class that matches the change. A code redeploy does not undo a schema change, and flipping a flag does not undo a deployed revision.

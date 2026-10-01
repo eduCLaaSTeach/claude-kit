@@ -11,8 +11,9 @@ Responsive is mobile-first; every token is defined in both a light and a dark th
 > 2. **The search box is the `.search-bar` pill** (§3): white, 1px-bordered, 8px-radius, leading magnifier, borderless input. Show a **clear (✕)** the moment it has text.
 > 3. **Pick the filter affordance by cardinality** (§4-§5): 2-5 mutually-exclusive states → underline **tabs** (with status dots); a few always-visible facets → labelled **dropdown fields** (each independently clearable, with a **Reset filters** button); applied multi-facets → removable **chips**; many grouped criteria → a **`Filters (n)` popover**.
 > 4. **Typeahead is for picking one known entity** (§6) - a `combobox` + `listbox` with full keyboard nav - not for filtering a table in place.
-> 5. **Every search/filter has a no-results state** (§7). Filtering is **client-instant** for loaded rows; **debounce (~250ms)** only server round-trips.
-> 6. Use the design tokens - never hardcode a hex or invent a shade outside the palette.
+> 5. **Every search/filter has a no-results state** (§7). Filter **client-instant** only where the table already holds its whole result set; a paginated or server-fed list sends the query to the server (**debounced ~250ms**) and renders the narrowed page it returns ([tables.md](tables.md) §4a).
+> 6. **Every button in the bar is the shared neutral secondary** - `btn btn-secondary` from [buttons.md](buttons.md) §4: `Filters`, `Reset filters`, `Clear all`, `Apply`. Nothing in a filter commits anything, so neither the bar nor the popover footer has a **solid button**; the search field's clear ✕ is `icon-btn` chrome, not a button.
+> 7. Use the design tokens - never hardcode a hex or invent a shade outside the palette.
 
 ---
 
@@ -24,7 +25,7 @@ Responsive is mobile-first; every token is defined in both a light and a dark th
 4. [Filter tabs, chips & dropdown fields](#4-filter-tabs-chips--dropdown-fields)
 5. [Faceted filter popover](#5-faceted-filter-popover)
 6. [Typeahead / autocomplete](#6-typeahead--autocomplete)
-7. [States — empty, no-results, loading (ENFORCED)](#7-states--empty-no-results-loading-enforced)
+7. [States - empty, no-results, loading (ENFORCED)](#7-states--empty-no-results-loading-enforced)
 8. [Choosing the right control](#8-choosing-the-right-control)
 9. [Responsive (ENFORCED, mobile-first)](#9-responsive-enforced-mobile-first)
 10. [Full CSS reference (copy-paste ready)](#10-full-css-reference-copy-paste-ready)
@@ -44,14 +45,14 @@ white, 1px border, 8px radius, muted leading icon, borderless input. Buttons ins
 
 ```css
 :root {
-    /* Brand palette (approved — canonical: design-tokens.md) */
-    --color-primary: #193E6B;                  /* Midnight Blue — active tab, focus ring, selected facet */
+    /* Brand palette (approved - canonical: design-tokens.md) */
+    --color-primary: #193E6B;                  /* Midnight Blue - active tab, focus ring, selected facet */
     --color-accent: #B3A125;                   /* Green Gold */
     --color-secondary-violet: #7F3F98;         /* Cadmium Violet */
-    --color-secondary-blue: #448E9D;           /* Jelly Bean Blue — typeahead highlight, edit affordance */
+    --color-secondary-blue: #448E9D;           /* Jelly Bean Blue - typeahead highlight, edit affordance */
     --color-secondary-sunray: #E9AC53;         /* Sunray */
-    --color-success: #5F8025;                  /* Avocado Green — status dot: active */
-    --color-danger: #991547;                   /* Violet-Red — status dot: inactive / clear-all */
+    --color-success: #5F8025;                  /* Avocado Green - status dot: active */
+    --color-danger: #991547;                   /* Violet-Red - status dot: inactive */
     --color-background: #E8DFD0;               /* canvas (dark: #1A2E46) */
     --color-surface: #FFFFFF;                  /* dark: #253E5D */
     --color-text: #1E2E42;                     /* ink (dark: #E9EFF6) */
@@ -62,8 +63,8 @@ white, 1px border, 8px radius, muted leading icon, borderless input. Buttons ins
     --sf-border: color-mix(in srgb, var(--color-text) 14%, transparent);
     --sf-border-strong: color-mix(in srgb, var(--color-text) 26%, transparent);
     --sf-focus-ring: color-mix(in srgb, var(--color-primary) 35%, transparent);
-    --sf-field-h: 15px;                /* min control height — mirrors forms.md --field-height-page */
-    --sf-field-pad: 5px 12px;          /* vertical padding matches forms .field (rendered ≈ 30px) */
+    --sf-field-h: 32px;                /* control height - the forms.md --field-height-page value */
+    --sf-field-pad: 0 12px;            /* horizontal only, like a forms .field; the 32px height centers it */
     --sf-icon: var(--color-text-muted);
     --sf-pop-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
     --sf-option-active: color-mix(in srgb, var(--color-secondary-blue) 14%, transparent);
@@ -81,19 +82,23 @@ label, dot, or checkmark.
 
 ## 2. Anatomy of a search/filter bar
 
+**The bar is required on every list/index table** ([tables.md](tables.md) §4a), so this is not a decision
+about whether to narrow a list, only about which controls do it. That file owns how the bar binds to the
+rows, the counts, the page, and the URL; this one owns the controls.
+
 Narrowing controls sit **above the table**, inside or under its toolbar. Order left → right: **search**,
 then **filter tabs/chips**, then a **`Filters (n)`** button for overflow facets. Applied facets echo back
 as **removable chips** on the row below.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│  🔍 Search by name, code, owner…                            ✕         │  ← .sf-search (pill)
+│  🔍 Search by name, code, owner...                            ✕         │  ← .sf-search (pill)
 ├──────────────────────────────────────────────────────────────────────┤
 │  ● All   ● Active   ● Inactive            [ ▼ Filters (2) ]            │  ← .sf-tabs + .sf-filter-btn (funnel icon)
 ├──────────────────────────────────────────────────────────────────────┤
-│  Status [Active ▾] ✕   Type [Agent ▾] ✕   Owner [Any ▾]   Reset       │  ← .sf-filters-row (dropdown fields)
+│  Status [Active ▾] ✕   Type [Agent ▾] ✕   Owner [Any ▾]   [Reset]     │  ← .sf-filters-row (dropdown fields)
 ├──────────────────────────────────────────────────────────────────────┤
-│  Status: Active ✕   Type: Agent ✕                        Clear all     │  ← .sf-chips (applied facets)
+│  Status: Active ✕   Type: Agent ✕                        [Clear all]   │  ← .sf-chips (applied facets)
 └──────────────────────────────────────────────────────────────────────┘
                        ┌───────────────────────────────┐
                        │ Status                         │  ← .sf-pop (faceted popover)
@@ -111,6 +116,7 @@ as **removable chips** on the row below.
 - **Chips** (`.sf-chips`): one removable chip per applied facet; **Clear all** resets them.
 - **Popover** (`.sf-pop`): grouped criteria with **Apply** / **Clear all**.
 - **Typeahead** (`.sf-typeahead`, §6): a search variant whose input owns a results `listbox`.
+- **Buttons**: `Filters`, `Reset filters`, `Clear all`, and `Apply` are all the one shared neutral secondary ([buttons.md](buttons.md) §4), at the **32px field height** and never `btn-sm` - they share a row with the fields, so a shorter control reads as a mistake ([buttons.md](buttons.md) §5). The bar only changes what is on screen, so it carries **no solid button** - the page's solid action stays the archetype's primary CTA in the page header.
 
 ---
 
@@ -118,15 +124,15 @@ as **removable chips** on the row below.
 
 The search box is the `.search-bar` pill, exposed as `.sf-search` here - the **only** approved free-text search shape.
 
-- **Structure** — `<div class="sf-search">` wrapping a leading **search icon**, an `<input type="search">` (borderless, transparent), and a trailing **clear button**.
-- **Icon** — a search (magnifier) icon from the skill's bundled icon registry (library component, or inline outlined search SVG). Never an emoji. Decorative (`aria-hidden`) - the input's label carries meaning.
-- **Width (PRINCIPLED)** — the pill sits at **~40% of its container** (`min 240px`, `max 420px`); widen toward full-width on a search-first screen or narrow viewports (§9).
-- **Height** — the pill and every filter control use the **same control height as a [forms](forms.md) field** (mirrors `--field-height-page` + `5px` vertical padding, ≈ 30px).
-- **Placeholder** — name the searchable fields: *"Search by name, code, or owner…"*. Never a bare *"Search…"* when the scope is non-obvious.
-- **Clear (✕)** — appears **only when the field has text** (`hidden` otherwise); clears the value, refocuses the input, re-runs the search. **ENFORCED:** no permanently-visible empty ✕.
-- **Result count** — an optional muted *"12 results"* may sit to the right, updating live.
-- **Behavior** — filtering already-loaded rows is **instant** (each keystroke); a server-hitting search is **debounced ~250ms** (PRINCIPLED) and shows the in-field spinner (§7) while in flight. `Esc` in a non-empty field clears it (same as ✕).
-- **Type** — `type="search"` for semantics; native clear is suppressed (we render our own).
+- **Structure** - `<div class="sf-search">` wrapping a leading **search icon**, an `<input type="search">` (borderless, transparent), and a trailing **clear button**.
+- **Icon** - a search (magnifier) icon from the skill's bundled icon registry (library component, or inline outlined search SVG). Never an emoji. Decorative (`aria-hidden`) - the input's label carries meaning.
+- **Width (PRINCIPLED)** - the pill sits at **~40% of its container** (`min 240px`, `max 420px`); widen toward full-width on a search-first screen or narrow viewports (§9).
+- **Height** - the pill and every filter control are **32px**, the same control height as a [forms](forms.md) field (`--field-height-page`), with horizontal-only padding. They sit in a row beside form fields and buttons, so a shorter control reads as a mistake.
+- **Placeholder** - name the searchable fields: *"Search by name, code, or owner..."*. Never a bare *"Search..."* when the scope is non-obvious.
+- **Clear (✕)** - icon-only chrome, not a button: `icon-btn icon-btn-sm` from [buttons.md](buttons.md) §4.1, with `aria-label="Clear search"`. Appears **only when the field has text** (`hidden` otherwise); clears the value, refocuses the input, re-runs the search. **ENFORCED:** no permanently-visible empty ✕.
+- **Result count** - an optional muted *"12 results"* may sit to the right, updating live.
+- **Behavior** - filtering is **instant** (each keystroke) only when the table already holds its whole result set; the moment the list is paginated or server-fed, the query goes to the server **debounced ~250ms** (PRINCIPLED) with the in-field spinner (§7) while in flight, and the narrowed page comes back ([tables.md](tables.md) §4a). `Esc` in a non-empty field clears it (same as ✕).
+- **Type** - `type="search"` for semantics; native clear is suppressed (we render our own).
 
 ---
 
@@ -148,10 +154,10 @@ For **2-5 mutually-exclusive states** (All / Active / Inactive), use underline t
 When facets come from the popover, **echo each applied one as a removable chip** so the active set is always visible.
 
 - `.sf-chip` = a soft navy-tinted pill: *"Status: Active"* + a trailing **✕** button (`aria-label="Remove Status: Active filter"`). Removing a chip drops that facet and re-runs.
-- A **Clear all** text button sits at the end of the chip row when ≥ 1 chip is present.
+- A **Clear all** button - the shared neutral secondary, `btn btn-secondary btn-sm sf-clear-all` ([buttons.md](buttons.md) §4) - sits at the end of the chip row when ≥ 1 chip is present. Dropping a filter is not destructive, so it is never danger-colored and never borderless.
 - The chip row is **absent** (no markup) when nothing is applied - never an empty bar.
 
-### Dropdown fields (always-visible facets) — PRINCIPLED
+### Dropdown fields (always-visible facets) - PRINCIPLED
 
 When a list has **a handful of independent facets** that benefit from staying on screen (Status, Type,
 Owner), render them as a row of labelled **dropdown fields** rather than hiding them behind the popover.
@@ -161,14 +167,14 @@ These are **custom single-select dropdowns** - same component family as the type
 is **branded** (rounded corners, real hover highlight, scrollable list, matching border). A native
 `<select>` can't be styled this way.
 
-- **Row** (`.sf-filters-row`) — a flex-wrap row of `.sf-dropdown` fields followed by a **Reset filters** button.
-- **Field** (`.sf-dropdown`) — a `<label>` above a **trigger button** (`.sf-dropdown-toggle`) and a trailing **✕** (`.sf-field-clear`). The trigger is field-shaped (same border, radius, height as a form input), shows the selected label or the neutral placeholder (*"All"* / *"Any"*) plus a chevron, and carries `aria-haspopup="listbox"` + `aria-expanded`.
-- **Menu** (`.sf-listbox` / `.sf-option`) — reuses the typeahead's listbox: rounded, soft-shadowed, **scrollable** (`max-height`, `overflow-y:auto`), with a **hover** highlight and the current value marked `aria-selected` (blue tint). `role="listbox"` of `role="option"`.
-- **Outline = field border** — trigger and menu both use the neutral field border (`--sf-border`); focus uses a subtle ring in that **same border color**, not navy.
-- **Per-field ✕** (`.sf-field-clear`) — resets **just that field**; **hidden until** a non-default value is chosen.
-- **Reset** (`.sf-reset`) — a **ghost button** clearing **every** field at once; **hidden until** ≥ 1 field is set (no permanently-visible dead control).
-- **Keyboard** — open on click/`Enter`/`Space`; `↑`/`↓` move the active option, `Enter` selects, `Esc`/outside-click closes and returns focus to the trigger.
-- **Behavior** — selecting re-runs the filter immediately; the active set is the union of all non-default fields. For a *searchable* single-pick of one entity, use the typeahead (§6).
+- **Row** (`.sf-filters-row`) - a flex-wrap row of `.sf-dropdown` fields followed by a **Reset filters** button.
+- **Field** (`.sf-dropdown`) - a `<label>` above a **trigger button** (`.sf-dropdown-toggle`) and a trailing **✕** (`.sf-field-clear`). The trigger is field-shaped (same border, radius, height as a form input), shows the selected label or the neutral placeholder (*"All"* / *"Any"*) plus a chevron, and carries `aria-haspopup="listbox"` + `aria-expanded`.
+- **Menu** (`.sf-listbox` / `.sf-option`) - reuses the typeahead's listbox: rounded, soft-shadowed, **scrollable** (`max-height`, `overflow-y:auto`), with a **hover** highlight and the current value marked `aria-selected` (blue tint). `role="listbox"` of `role="option"`.
+- **Outline = field border** - trigger and menu both use the neutral field border (`--sf-border`); focus uses a subtle ring in that **same border color**, not navy.
+- **Per-field ✕** (`.sf-field-clear`) - resets **just that field**; **hidden until** a non-default value is chosen.
+- **Reset filters** (`.sf-reset`) - the shared neutral secondary, `btn btn-secondary btn-sm sf-reset` ([buttons.md](buttons.md) §4), clearing **every** field at once; **hidden until** ≥ 1 field is set (no permanently-visible dead control).
+- **Keyboard** - open on click/`Enter`/`Space`; `↑`/`↓` move the active option, `Enter` selects, `Esc`/outside-click closes and returns focus to the trigger.
+- **Behavior** - selecting re-runs the filter immediately; the active set is the union of all non-default fields. For a *searchable* single-pick of one entity, use the typeahead (§6).
 - **ENFORCED (render-only-functional-UI):** omit any field whose options aren't wired - never a disabled placeholder dropdown.
 
 ---
@@ -178,10 +184,10 @@ is **branded** (rounded corners, real hover highlight, scrollable list, matching
 For **many grouped criteria**, a single **Filters** button (funnel icon) opens an anchored popover,
 keeping the bar clean while surfacing the active count.
 
-- **Trigger** (`.sf-filter-btn`) — a secondary button carrying a **filter funnel icon** and a count badge when ≥ 1 facet is applied: **`▽ Filters (2)`**. The icon is **outlined when no filter is set, solid once ≥ 1 is applied** (swap the icon, or toggle the `.is-filtered` class to show the solid SVG). `aria-haspopup="dialog"`, `aria-expanded` reflects open state.
-- **Panel** (`.sf-pop`) — `role="dialog"`, anchored under the trigger, `--sf-pop-shadow`, 8px radius. Grouped sections, each a `<fieldset>` with a `<legend>`: single-choice → radios, multi-choice → checkboxes.
-- **Footer** — **Clear all** (text, left) and **Apply** (primary, right). **Apply** commits the selection, closes the popover, updates the chips (§4) and the count badge. **PRINCIPLED:** small filter sets may apply live (no Apply button); large/expensive ones use explicit Apply.
-- **Dismissal** — `Esc`, outside-click, or Apply closes it; focus returns to the trigger.
+- **Trigger** (`.sf-filter-btn`) - the shared neutral secondary (`btn btn-secondary sf-filter-btn`, [buttons.md](buttons.md) §4) carrying a **filter funnel icon** and a count badge when ≥ 1 facet is applied: **`▽ Filters (2)`**. The icon is **outlined when no filter is set, solid once ≥ 1 is applied** (swap the icon, or toggle the `.is-filtered` class to show the solid SVG) - that is the **icon** reporting filter state, not the button changing emphasis, so the shell stays the same secondary either way while the glyph and the badge carry the state. `aria-haspopup="dialog"`, `aria-expanded` reflects open state.
+- **Panel** (`.sf-pop`) - `role="dialog"`, anchored under the trigger, `--sf-pop-shadow`, 8px radius. Grouped sections, each a `<fieldset>` with a `<legend>`: single-choice → radios, multi-choice → checkboxes.
+- **Footer** - **Clear all** (left) and **Apply** (right), both the shared neutral secondary (`btn btn-secondary btn-sm`). A filter surface changes only what is on screen, so the footer carries **no solid button** ([buttons.md](buttons.md) §4). **Apply** commits the selection, closes the popover, updates the chips (§4) and the count badge. **PRINCIPLED:** small filter sets may apply live (no Apply button); large/expensive ones use explicit Apply.
+- **Dismissal** - `Esc`, outside-click, or Apply closes it; focus returns to the trigger.
 - **ENFORCED (render-only-functional-UI):** never render a facet group with no working options. An empty or unwired group is **omitted**, not shown disabled.
 
 ---
@@ -191,22 +197,22 @@ keeping the bar clean while surfacing the active count.
 Use typeahead when the user must **pick one known entity** from a large set (a user, a module), not to
 filter a table in place. It is a search input that owns a results list.
 
-- **Roles** — input is `role="combobox"` with `aria-expanded`, `aria-controls` (the list id), and `aria-activedescendant` (the highlighted option id). The list is `role="listbox"` of `role="option"`. **ENFORCED:** these ARIA hooks are required - a bare div list is not accessible.
-- **Matching** — case-insensitive substring; the matched span wrapped `<mark>` (the blue tint), rest muted. Results cap at ~8 with the count announced.
-- **Keyboard** — `↓`/`↑` move the active option (wrapping), `Enter` selects it, `Esc` closes the list (keeps text), `Tab` closes and moves on. Mouse hover mirrors the active option.
-- **Selection** — picking an option fills the input and fires `onSelect(value)`; the list closes.
-- **Empty** — when the query matches nothing, show a single non-selectable **"No matches"** row; don't collapse the list to nothing.
-- **Loading** — server-backed typeahead shows the in-field spinner (§7) while fetching.
+- **Roles** - input is `role="combobox"` with `aria-expanded`, `aria-controls` (the list id), and `aria-activedescendant` (the highlighted option id). The list is `role="listbox"` of `role="option"`. **ENFORCED:** these ARIA hooks are required - a bare div list is not accessible.
+- **Matching** - case-insensitive substring; the matched span wrapped `<mark>` (the blue tint), rest muted. Results cap at ~8 with the count announced.
+- **Keyboard** - `↓`/`↑` move the active option (wrapping), `Enter` selects it, `Esc` closes the list (keeps text), `Tab` closes and moves on. Mouse hover mirrors the active option.
+- **Selection** - picking an option fills the input and fires `onSelect(value)`; the list closes.
+- **Empty** - when the query matches nothing, show a single non-selectable **"No matches"** row; don't collapse the list to nothing.
+- **Loading** - server-backed typeahead shows the in-field spinner (§7) while fetching.
 
 ---
 
-## 7. States — empty, no-results, loading (ENFORCED)
+## 7. States - empty, no-results, loading (ENFORCED)
 
 Every search/filter ships these. Never leave a bare blank list after a query.
 
-- **Empty query** — the unfiltered list; the search shows its placeholder, no ✕, no chips.
-- **No results** — render the [empty-states](empty-and-loading-state.md) "no results" block (icon + *"No items match your search"* + a **Clear filters** action that resets search **and** facets). **ENFORCED:** the table never renders zero rows with no message.
-- **Loading** (server round-trip) — an in-field **spinner** replaces the magnifier (or sits before the clear ✕); the list shows the table's skeleton/loading state ([tables](tables.md) §7). Inputs stay enabled so the user can keep typing.
+- **Empty query** - the unfiltered list; the search shows its placeholder, no ✕, no chips.
+- **No results** - render the [empty-states](empty-and-loading-state.md) "no results" block (icon + *"No items match your search"* + a **Clear filters** action that resets search **and** facets). **ENFORCED:** the table never renders zero rows with no message.
+- **Loading** (server round-trip) - an in-field **spinner** replaces the magnifier (or sits before the clear ✕); the list shows the table's skeleton/loading state ([tables](tables.md) §7). Inputs stay enabled so the user can keep typing.
 
 ---
 
@@ -215,7 +221,7 @@ Every search/filter ships these. Never leave a bare blank list after a query.
 | Situation | Use | Why |
 |---|---|---|
 | Free-text across several fields | **Search pill** (§3) | One box, matches everything |
-| 2–5 mutually-exclusive states | **Tabs** (§4) | One visible click, current state obvious |
+| 2-5 mutually-exclusive states | **Tabs** (§4) | One visible click, current state obvious |
 | A few independent facets, kept on screen | **Dropdown fields** (§4) | Always-visible selects, each clearable + Reset |
 | Several independent facets, applied set must stay visible | **Chips** (§4) | Each facet removable at a glance |
 | Many grouped criteria (6+), or rarely changed | **Filters popover** (§5) | Keeps the bar clean; count badge summarizes |
@@ -265,7 +271,7 @@ the bar, and every touch target is **≥ 44px**.
     border: 1px solid var(--sf-border);
     border-radius: var(--sf-radius);
     background: var(--color-surface);
-    width: 40%;            /* PRINCIPLED — ~40% of container so it doesn't dominate the toolbar */
+    width: 40%;            /* PRINCIPLED - ~40% of container so it doesn't dominate the toolbar */
     min-width: 240px;
     max-width: 420px;
     min-height: var(--sf-field-h);   /* forms-aligned control height */
@@ -289,20 +295,11 @@ the bar, and every touch target is **≥ 44px**.
     color: var(--color-text);
 }
 .sf-search input::placeholder { color: color-mix(in srgb, var(--color-text-muted) 75%, transparent); }
-/* hide native search clear — we render our own */
+/* hide native search clear - we render our own */
 .sf-search input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
-.sf-search .sf-clear {
-    flex-shrink: 0;
-    border: none;
-    background: none;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    font-size: 15px;
-    line-height: 1;
-    padding: 2px;
-    border-radius: 50%;
-}
-.sf-search .sf-clear:hover { color: var(--color-text); }
+/* the clear mark is icon-only chrome, not a button: `icon-btn icon-btn-sm` from buttons.md §4.1 / §10,
+   with aria-label="Clear search". Only its fit inside the pill lives here. */
+.sf-search .sf-clear { flex-shrink: 0; border-radius: 50%; }
 .sf-search .sf-clear[hidden] { display: none; }
 .sf-search .sf-spinner { flex-shrink: 0; }
 
@@ -357,9 +354,9 @@ the bar, and every touch target is **≥ 44px**.
     opacity: 0.7;
 }
 .sf-chip button:hover { opacity: 1; }
-.sf-chips .sf-clear-all { margin-left: 4px; }   /* ghost styling shared with .sf-reset below */
+.sf-chips .sf-clear-all { margin-left: 4px; }   /* the button look comes from buttons.md - see the Reset / Clear all block below */
 
-/* ===== Dropdown fields (§4) — custom single-select listbox ===== */
+/* ===== Dropdown fields (§4) - custom single-select listbox ===== */
 .sf-filters-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--spacing-md); }
 .sf-dropdown { position: relative; display: flex; flex-direction: column; gap: 4px; }
 .sf-dropdown > label { font-size: var(--text-small); font-weight: 600; color: var(--color-text); }
@@ -408,41 +405,23 @@ the bar, and every touch target is **≥ 44px**.
 .sf-field-clear:hover { color: var(--color-text); }
 .sf-field-clear[hidden] { display: none; }
 
-/* Reset + Clear-all — ghost buttons (transparent), destructive (danger) text */
-.sf-reset, .sf-chips .sf-clear-all {
-    align-self: flex-end;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--color-danger);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: var(--text-small);
-    font-weight: 600;
-    padding: 6px 12px;
-    border-radius: var(--sf-radius);
-}
-.sf-reset:hover, .sf-chips .sf-clear-all:hover { background: color-mix(in srgb, var(--color-danger) 10%, transparent); }
-.sf-reset[hidden] { display: none; }
+/* Reset filters + Clear all - the shared neutral secondary: render them as
+   `btn btn-secondary btn-sm sf-reset` and `btn btn-secondary btn-sm sf-clear-all`, and let
+   buttons.md §10 own the fill, border, ink, hover, focus, and size. Clearing a filter changes what
+   is on screen and destroys nothing, so neither control is danger-colored and neither is borderless.
+   Only layout and visibility live here - never a second neutral button style. */
+.sf-reset { align-self: flex-end; }
+/* .btn sets an explicit display, which overrides the UA [hidden] rule - re-assert it */
+.sf-reset[hidden], .sf-chips .sf-clear-all[hidden] { display: none; }
 
 /* ===== Filter button + popover (§5) ===== */
 .sf-filter-wrap { position: relative; display: inline-block; }
-.sf-filter-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    border: 1px solid var(--sf-border-strong);
-    border-radius: var(--sf-radius);
-    background: var(--color-surface);
-    font-family: inherit;
-    font-size: var(--text-body);
-    color: var(--color-text);
-    cursor: pointer;
-}
-.sf-filter-btn:hover { border-color: var(--color-primary); }
+/* The trigger is the shared neutral secondary: `btn btn-secondary sf-filter-btn`, with buttons.md
+   §10 owning the fill, border, ink, hover, focus, and height. Only the icon swap and the count badge
+   live here - `.is-filtered` reports filter state through the funnel glyph and the badge, never
+   through a different fill, border, or emphasis. */
 .sf-filter-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 .sf-filter-btn .sf-icon-solid { display: none; }
-.sf-filter-btn.is-filtered { border-color: var(--color-primary); color: var(--color-primary); }
 .sf-filter-btn.is-filtered .sf-icon-outline { display: none; }
 .sf-filter-btn.is-filtered .sf-icon-solid { display: inline; }
 .sf-filter-btn .sf-badge {
@@ -458,7 +437,7 @@ the bar, and every touch target is **≥ 44px**.
     align-items: center;
     justify-content: center;
 }
-/* the explicit display above overrides the UA [hidden] rule — re-assert it so the count clears */
+/* the explicit display above overrides the UA [hidden] rule - re-assert it so the count clears */
 .sf-filter-btn .sf-badge[hidden] { display: none; }
 .sf-pop {
     position: absolute;
@@ -553,7 +532,13 @@ the bar, and every touch target is **≥ 44px**.
 ## 11. Full JS reference (behavior contract)
 
 Vanilla, framework-free, progressive-enhancement. Wire once per control; in React, model the same state
-(query, applied facets, active option) with hooks and `useMemo`'d filtering.
+(query, applied facets, active option) with hooks.
+
+> **Scope warning.** The filtering below runs over the rows already in the DOM, which is correct only for a
+> table that holds its whole result set. Once the list is paginated or server-fed, the query, the facets,
+> and the sort go to the server (debounced) and the narrowed page comes back - `useMemo`'d client filtering
+> then narrows one page and hides the rest of the matches ([tables.md](tables.md) §4a). The control
+> behavior, ARIA, and states below carry over unchanged either way.
 
 ```js
 /* ===== Search pill (§3) ===== */
@@ -609,13 +594,17 @@ function renderChips(host, facets, { onRemove, onClearAll } = {}) {
     facets.forEach((f) => {
         const chip = document.createElement('span');
         chip.className = 'sf-chip';
-        chip.innerHTML = `${f.label} <button type="button" aria-label="Remove ${f.label} filter">✕</button>`;
-        chip.querySelector('button').addEventListener('click', () => onRemove && onRemove(f));
+        const rm = document.createElement('button');  // labels are data: text APIs only, never innerHTML
+        rm.type = 'button';
+        rm.setAttribute('aria-label', `Remove ${f.label} filter`);
+        rm.textContent = '✕';
+        rm.addEventListener('click', () => onRemove && onRemove(f));
+        chip.append(`${f.label} `, rm);
         host.appendChild(chip);
     });
     const clearAll = document.createElement('button');
     clearAll.type = 'button';
-    clearAll.className = 'sf-clear-all';
+    clearAll.className = 'btn btn-secondary btn-sm sf-clear-all';
     clearAll.textContent = 'Clear all';
     clearAll.addEventListener('click', () => onClearAll && onClearAll());
     host.appendChild(clearAll);
@@ -692,7 +681,17 @@ function initTypeahead(root, { source, onSelect, render } = {}) {
     const list = root.querySelector('.sf-listbox');
     let active = -1, options = [];
     const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const highlight = (text, q) => q ? text.replace(new RegExp(`(${escape(q)})`, 'ig'), '<mark>$1</mark>') : text;
+    /* Returns a DocumentFragment of text nodes and <mark> elements, so a label never becomes markup.
+       A custom `render` must return a Node too, never an HTML string. */
+    const highlight = (text, q) => {
+        const frag = document.createDocumentFragment();
+        if (!q) { frag.append(text); return frag; }
+        text.split(new RegExp(`(${escape(q)})`, 'ig')).forEach((part, i) => {
+            if (i % 2) { const m = document.createElement('mark'); m.textContent = part; frag.append(m); }
+            else if (part) frag.append(part);
+        });
+        return frag;
+    };
     const close = () => { list.hidden = true; input.setAttribute('aria-expanded', 'false'); active = -1; };
     const setActive = (i) => {
         options.forEach((o, k) => o.setAttribute('aria-selected', String(k === i)));
@@ -710,7 +709,7 @@ function initTypeahead(root, { source, onSelect, render } = {}) {
         matches.forEach((it, k) => {
             const li = document.createElement('li');
             li.className = 'sf-option'; li.id = `sf-opt-${k}`; li.role = 'option';
-            li.innerHTML = render ? render(it, q, highlight) : highlight(it.label, q);
+            li.replaceChildren(render ? render(it, q, highlight) : highlight(it.label, q));
             li.addEventListener('mousedown', (e) => { e.preventDefault(); choose(it); });
             li.addEventListener('mouseenter', () => setActive(k));
             list.appendChild(li);
@@ -736,7 +735,7 @@ function initTypeahead(root, { source, onSelect, render } = {}) {
 ## 12. Accessibility checklist
 
 - [ ] Search input has a label (visible or `aria-label`) naming what it searches.
-- [ ] Clear (✕) is a real `<button>` with `aria-label="Clear search"`, present only when non-empty.
+- [ ] Clear (✕) is a real `<button>` - `icon-btn` chrome ([buttons.md](buttons.md) §4.1) - with `aria-label="Clear search"`, present only when non-empty.
 - [ ] Tabs use `role="tablist"`/`role="tab"` + `aria-selected`; the dot is `aria-hidden`.
 - [ ] Each chip's remove ✕ is a `<button>` with a descriptive `aria-label`.
 - [ ] Dropdown field: trigger is a `<button aria-haspopup="listbox">` + `aria-expanded`; menu is `role="listbox"`, options `role="option"` with `aria-selected`; `↑/↓`/`Enter`/`Esc` + outside-click work and focus returns to the trigger.
@@ -753,11 +752,14 @@ function initTypeahead(root, { source, onSelect, render } = {}) {
 - ✅ Name the searchable fields in the placeholder.
 - ✅ Echo applied facets as removable chips so the active set is always visible.
 - ✅ Use tabs for a few exclusive states, a popover for many grouped facets.
-- ✅ Filter loaded rows instantly; debounce only server calls.
+- ✅ Filter instantly only where the table holds its whole result set; send a paginated or server-fed list's query to the server, debounced, and render the narrowed page.
 - ✅ Always render a no-results state with a **Clear filters** escape.
 
 **Don't**
+- ❌ Ship a list/index table with no bar at all, or filter only the rows already loaded.
+- ❌ Keep the applied query, facets, and sort in client state only, so a refresh loses the view.
 - ❌ Show a permanently-visible empty ✕ in the search box.
+- ❌ Give `Reset filters`, `Clear all`, or `Apply` a solid, borderless, or danger-colored look - every button in the bar is the one neutral secondary.
 - ❌ Signal a filter state by color alone (pair with a dot/label/check).
 - ❌ Put 6+ facets in a tab row - move them to the popover.
 - ❌ Render an empty/disabled facet group whose data isn't wired (omit it).
@@ -768,12 +770,14 @@ function initTypeahead(root, { source, onSelect, render } = {}) {
 
 ## 14. Rules for the AI assistant
 
-1. **Default the list header to search + tabs.** For a few independent facets, use **dropdown fields** (§4); escalate to the `Filters (n)` popover only when facets outgrow a tab/dropdown row; add chips only when facets are independent and must stay visible.
-2. **Reuse `.sf-search`** for every free-text box - don't invent a new search field. Use the bundled icon registry's **search (magnifier) icon**, not an emoji, and keep the pill at the PRINCIPLED **~40% width** unless the screen is search-first.
-3. **Typeahead only for entity-picking**, never to filter a table in place - and never without the combobox/listbox ARIA from §6.
-4. **Instant client filter, debounced server filter** (~250ms). Show the in-field spinner only for server round-trips.
-5. **Respect render-only-functional-UI:** omit any facet/group/tab whose behaviour isn't wired - don't render it disabled.
-6. **Tokens only**, mobile-first responsive. Run the §12 checklist before finalizing.
+1. **Every list/index table gets this bar** ([tables.md](tables.md) §4a). Filter and sort the whole result set (server-side when the list is paginated), return to page 1 on any change, report the filtered total in the counts, and keep the query, facets, sort, and page in the URL so a refresh or a shared link reproduces the view. Never narrow only the rows already in the DOM when more matches sit behind pagination.
+2. **Default the list header to search + tabs.** For a few independent facets, use **dropdown fields** (§4); escalate to the `Filters (n)` popover only when facets outgrow a tab/dropdown row; add chips only when facets are independent and must stay visible.
+3. **Reuse `.sf-search`** for every free-text box - don't invent a new search field. Use the bundled icon registry's **search (magnifier) icon**, not an emoji, and keep the pill at the PRINCIPLED **~40% width** unless the screen is search-first.
+4. **Typeahead only for entity-picking**, never to filter a table in place - and never without the combobox/listbox ARIA from §6.
+5. **Instant client filter only where the whole result set is loaded**, otherwise a debounced (~250ms) server filter. Show the in-field spinner only for server round-trips.
+6. **Respect render-only-functional-UI:** omit any facet/group/tab whose behaviour isn't wired - don't render it disabled.
+7. **Take every button from [buttons.md](buttons.md) §4:** `Filters`, `Reset filters`, `Clear all`, and `Apply` are `btn btn-secondary` (`btn-sm` in a chip or dropdown row), the search ✕ is `icon-btn` chrome, and no filter control is ever solid, borderless, or danger-colored. Never define a second neutral button style in this file.
+8. **Tokens only**, mobile-first responsive. Run the §12 checklist before finalizing.
 
 ---
 
@@ -781,7 +785,7 @@ function initTypeahead(root, { source, onSelect, render } = {}) {
 
 ```
 Need free text across fields?            → Search pill (§3)
-2–5 exclusive states?                    → Tabs + dots (§4)
+2-5 exclusive states?                    → Tabs + dots (§4)
 Independent facets, keep them visible?   → Chips (§4)  [+ popover to set them]
 6+ grouped criteria / rarely changed?    → Filters popover (§5)
 Pick ONE known entity from many?         → Typeahead (§6)

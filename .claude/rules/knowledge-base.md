@@ -52,7 +52,7 @@ When work is a solution or module, document its constituent features as feature 
 Cover each of the following in this order. When a layer does not exist (for example a backend-only feature with no UI), state "Not applicable" rather than omitting it or inventing content:
 
 1. Logical flows and workflows: end-to-end behavior, user flows, business workflows, state transitions, decision points.
-2. Data models and tables: the entities the feature reads/writes and the verified tables and columns behind them, metadata only. Names come from Schema MCP verification per `.claude/rules/schema-mcp.md`, never from memory; detailed column metadata lives in the table dictionary, linked here rather than duplicated.
+2. Data models and tables: the entities the feature reads/writes and the verified tables and columns behind them, metadata only. Names come from verification against the project's schema source per `.claude/rules/database-schema.md`, never from memory; detailed column metadata lives in the table dictionary, linked here rather than duplicated. Include each table's one-sentence grain, the feature's confirmed analytics question set with each question traced to what answers it, the entity relationships with cardinality and optionality, the ERD, and the semantic hand-off (measures with units and additivity, dimension attributes, hierarchies), per `.claude/rules/semantic-data-model.md`.
 3. Frontend: code paths (files, components), logic, libraries.
 4. Backend: code paths (files, services), logic, libraries.
 5. API routing: routes/endpoints exposed or consumed, routing logic, libraries, consistent with `.claude/rules/api-design.md` when a service interface is in play.
@@ -122,13 +122,15 @@ When the developer answers, promote the confirmed answer to the right tier (`.cl
 
 ## What To Record
 
-Concise, verified facts: changed behavior; affected files/modules/apps; commands used for validation; reusable implementation patterns; integration assumptions; table/schema concepts touched; MCP proposal IDs; known risks and follow-up.
+Concise, verified facts: changed behavior; affected files/modules/apps; commands used for validation; reusable implementation patterns; integration assumptions; table/schema concepts touched; migrations authored; known risks and follow-up.
 
 Do not record tentative plans as verified facts. Do not record secrets, credentials, hosting/deployment/database passwords, tokens, private keys, production row data, or customer records.
 
 ## Table Dictionary
 
-Update the table dictionary when work verifies or changes knowledge about database tables, columns, relationships, indexes, repositories, reports, imports, exports, or schema proposals. Metadata only; no row data, customer records, tokens, passwords, or production values.
+Update the table dictionary when work verifies or changes knowledge about database tables, columns, relationships, indexes, repositories, reports, imports, exports, or schema changes. Metadata only; no row data, customer records, tokens, passwords, or production values.
+
+Record each table's grain sentence and each column's analytical role (key, dimension key, dimension attribute, measure with its unit and additivity, business date, audit, scope, row reference) beside its classification, per `.claude/rules/semantic-data-model.md`, so whoever builds a report or a semantic model does not have to infer it from code.
 
 Table-dictionary updates follow the approval gate above, with one exception below.
 

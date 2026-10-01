@@ -4,11 +4,11 @@ Claude must make changes production ready before delivering them as complete.
 
 ## Required Behavior
 
-- Read existing code, docs, and knowledge-base context before editing. Read `.claude/PROJECT-CONTEXT.md` and ask for missing stack, hosting/deployment, database, MCP, or validation details first.
+- Read existing code, docs, and knowledge-base context before editing. Read `.claude/PROJECT-CONTEXT.md` and ask for missing stack, hosting/deployment, database, or validation details first.
 - Never assume unclear requirements or operational details; ask until the developer has confirmed enough to proceed safely.
 - Verify applicable rules and source files before changing behavior. Preserve the repository's existing stack, framework, architecture, naming, formatting, and test conventions.
 - Keep changes small, targeted, reviewable. Do not introduce new dependencies, services, queues, databases, build tools, deployment requirements, or architecture changes without approval.
-- Validate all external input at boundaries. Use safe framework/database APIs instead of ad hoc string concatenation for queries, commands, templates, or paths.
+- Validate all external input at boundaries. Use safe framework/database APIs instead of ad hoc string concatenation for queries, commands, templates, or paths. `.claude/rules/secure-coding.md` holds the detail: server-side validation, output encoding, CSRF, deserialization, supplied URLs, uploads, error display, the security audit trail, and the security tests.
 - Keep secrets out of source code, logs, generated docs, and chat summaries.
 - Handle expected failures through the established error/result pattern.
 - Add or update tests for behavior changes. Run available validation and state exact results. Do not treat work as bug-free without validation evidence; if validation cannot run, state why and provide exact follow-up commands or deployment verification steps.
@@ -39,6 +39,7 @@ Applies only when the change reads runtime configuration (environment variables,
 
 - Enumerate every configuration value a service reads in a central config contract, and ship a checked-in example file listing variable names with placeholders only. No undocumented variable: a value the code reads but the contract and example file omit is a defect. The example-file path and config library are confirmed facts; ask when unknown, and do not invent variable rows.
 - Validate required configuration on boot. Refuse to start with a clear message naming the missing/malformed value rather than degrading silently or failing deep in a later request.
+- Treat debug or verbose error output enabled in a production environment as invalid configuration, and refuse to start, per `.claude/rules/secure-coding.md`.
 - Resolve configuration by one consistent, documented precedence order (for example injected process environment over a local dev file over safe built-in defaults). Record the confirmed precedence and apply it everywhere.
 - Any built-in default must be non-secret and safe to ship. Secrets never have a hardcoded default; a missing secret is a boot failure, not a fallback.
 - Evolve configuration additively: adding a variable is non-breaking but documented in the same change; renaming or removing one is breaking and must be announced to dependents.
@@ -48,7 +49,7 @@ Applies only when the change reads runtime configuration (environment variables,
 
 - When the project declares a minimum coverage bar, respect it and report against it. Also declare what is exempt (for example generated code or thin pass-through adapters) so the bar is unambiguous.
 - Write tests for a behavior change and confirm they pass before the change is claimed done or proposed for merge. Prefer test-first where practical.
-- Require tests when present for: core/business logic; public API or contract behavior; authentication and authorization paths including negative cases (missing credential, insufficient scope); and, where applicable, migration apply and rollback paths.
+- Require tests when present for: core/business logic; public API or contract behavior; authentication and authorization paths including negative cases (missing credential, insufficient scope); the security cases in `.claude/rules/secure-coding.md` for the controls the change adds or alters; and, where applicable, migration apply and rollback paths.
 - Treat the confirmed CI gate (tests passing, coverage met, lint and build clean) as the merge contract and report against it.
 
 Test hygiene: each test creates and tears down its own data (no shared mutable fixtures or prior-test residue); use only synthetic data, never production data or real PII; isolate shared test-database state per developer or branch; mock external dependencies at their adapter boundary, and keep a small contract test against a real development instance to catch drift.
@@ -59,6 +60,7 @@ When writing or editing code that emits telemetry:
 
 - Emit logs in the confirmed structured logging format. Route metrics and traces to the confirmed destination.
 - Follow the confirmed health and readiness endpoint conventions. A readiness check should reflect the health of the dependencies the service needs, not merely that the process is up.
+- Where a flow enumerates its outcomes, every one of them emits a signal, including the ones that should never happen. Monitoring built on the absence of a signal cannot tell an outcome that never occurred from one nobody wrote down, so an outcome that is deliberately silent is recorded as silent rather than left blank for somebody to discover when they ask why a bucket is always empty.
 - Never log secrets or PII; follow `.claude/rules/secret-handling.md`.
 
 Correlation-id propagation is owned here:
@@ -83,12 +85,21 @@ Correlation-id propagation is owned here:
 
 Extends "Run available validation commands" above.
 
-- When checks can run, run them in order (build, then type/static checks, then lint and format, then tests) and fix what breaks before moving on. Use the confirmed commands.
+- When checks can run, run them in order (build, then type/static checks, then lint and format, then tests, then the confirmed security checks: the dependency audit where the lockfile changed, and any confirmed static security analysis or secret scan) and fix what breaks before moving on. Use the confirmed commands.
 - When checks cannot run, self-review your diff: confirm imports/exports resolve and every referenced symbol exists and matches its use.
 - For a UI change, walk first-paint, interaction, error, loading, empty, then small-screen, and confirm each is handled. See `.claude/rules/ui-ux-quality.md`.
 
 Do not claim done if a validation step was skipped. State plainly what is done and what is pending.
 
+## Compliance Claims
+
+- Never describe an application, a feature, or a change as SOC 2, ISO 27001, PCI DSS, HIPAA, or privacy-regime compliant on the strength of its code. Compliance is an attestation over controls, policies, operations, and evidence across the organization, and code is one input to it. "Certified", "audit-ready", "aligned", and "meets <framework>", said of an application, a feature, or a change as a whole, are compliance claims too.
+- Describe what was built as the control it is and the requirement it supports: "records every role change with the actor, the before and after values, and the authority held, which supports access-change monitoring", not "SOC 2 compliant access control".
+- Name a framework criterion only where `.claude/PROJECT-CONTEXT.md` records that mapping or the developer confirms it, in the form "<the control built>, which supports <framework> <criterion>". Never invent a criterion id.
+- When a compliance framework is raised, or a control is described against one, name what the requirement also depends on outside the repository, such as hosting and infrastructure controls, access reviews, monitoring and alert response, incident response, backup and restore testing, vendor management, policies, training, and the evidence an auditor collects. Say plainly that the change does not establish any of it.
+
 ## Not Complete Until
 
 A task is not complete until either validation ran successfully, or validation could not run and the reason plus exact follow-up command is documented. Never claim tests passed unless they were actually run.
+
+Evidence that would look identical on failure is not evidence. Before accepting an observation as validation, ask what it would have shown had the thing been broken; where the answer is "the same", the check has not run, however convincing the screen was. Read the state the operation was supposed to change instead.

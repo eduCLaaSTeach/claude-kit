@@ -8,7 +8,7 @@ area. Use when building the shell or primary navigation for any module.
 - Shell structure
 - Tokens & values
 - Top bar
-- Side nav (NavRail) — brand block, the four fixed clusters, features (nested groups ≤3 levels & leaves), depth-overflow tabs
+- Side nav (NavRail) - brand block, the four fixed clusters, features (nested groups ≤3 levels & leaves), depth-overflow tabs
 - Collapse / expand (brand block) & collapsed mode
 - Icons
 - Responsive
@@ -28,7 +28,7 @@ carries the **app name** and utilities.
 ```
 ┌───────────────┬──────────────────────────────┐
 │  [LOGO]    ◫  │  [App name]      🔔 ◐ avatar │  ← rail head + top bar = one row,
-│  🔍 filter…   ├──────────────────────────────┤    SAME height, dividers aligned
+│  🔍 filter...   ├──────────────────────────────┤    SAME height, dividers aligned
 │  NavRail      │                              │
 │  (expanded /  │   Main content               │
 │   collapsed)  │   (overflow: auto)           │
@@ -90,7 +90,7 @@ colors by design**.
 | Chrome muted text | `#566779` | `#9AABC0` | Cluster labels, nav icons, filter placeholder |
 | Divider | `#E4DCCD` | `rgba(255,255,255,0.13)` | Region borders (rail edge, bar bottom, rail head) |
 | Chrome edge shadow | `rgba(15,25,45,0.14)` | `rgba(0,0,0,0.50)` | Soft shadow lifting the chrome off the canvas |
-| Active nav (gold treatment) | tint `rgba(179,161,37,0.16)`, fg `#5C5010`, bar `#B3A125` | tint `rgba(201,182,47,0.22)`, fg `#EBDD7E`, bar `#C9B62F` | Active item background + label + 3px left bar — **Green Gold tint, not a status role** |
+| Active nav (gold treatment) | tint `rgba(179,161,37,0.16)`, fg `#5C5010`, bar `#B3A125` | tint `rgba(201,182,47,0.22)`, fg `#EBDD7E`, bar `#C9B62F` | Active item background + label + 3px left bar - **Green Gold tint, not a status role** |
 | Notification dot | `#991547` | `#F3AFC9` | Unread indicator on the bell |
 
 > **Dark theme:** every value above is approved for both themes in `design-tokens.md`. Author against
@@ -172,7 +172,7 @@ archetype's primary CTA lives in its page header).
   position: absolute; top: 5px; right: 5px;
   min-width: 8px; height: 8px;
   border-radius: 999px;
-  background: var(--alert-dot);  /* #991547 light / #F3AFC9 dark — chrome-safe alert color */
+  background: var(--alert-dot);  /* #991547 light / #F3AFC9 dark - chrome-safe alert color */
   box-shadow: 0 0 0 2px var(--chrome-bg);
 }
 
@@ -261,7 +261,7 @@ level.
 .nav-rail {
   display: flex; flex-direction: column;
   width: 100%; height: 100%;
-  overflow: hidden;                 /* the rail does NOT scroll as a whole — the head stays pinned */
+  overflow: hidden;                 /* the rail does NOT scroll as a whole - the head stays pinned */
   background: var(--chrome-bg);              /* #FFFFFF light / #080F1A dark */
   border-right: 1px solid var(--divider);    /* #E4DCCD light / rgba(255,255,255,0.13) dark */
   box-shadow: 2px 0 10px var(--chrome-edge); /* lifts the chrome off the canvas */
@@ -285,7 +285,7 @@ only; accordion **group** headers use a chevron-down, and a collapsed **group** 
 chevron hint - different controls, see Groups and Collapsed mode.)
 
 - **Expanded:** wide logo (clickable → home) on the left, the **`i-panel` toggle icon** on the right (collapses the rail).
-- **Collapsed (ENFORCED — overlay swap, like ChatGPT):** the short/compact mark and the `i-panel` expander share **one** fixed `40×34` slot (`object-fit: contain`) and cross-fade. At rest show **only** the short mark (clickable → home); on **hover OR keyboard-focus** of the brand block show **only** the `i-panel` expander on an opaque overlay that covers the slot exactly. Activating the block (click / `Enter` / `Space`) re-expands the rail, and the collapsed state persists.
+- **Collapsed (ENFORCED - overlay swap, like ChatGPT):** the short/compact mark and the `i-panel` expander share **one** fixed `40×34` slot (`object-fit: contain`) and cross-fade. At rest show **only** the short mark (clickable → home); on **hover OR keyboard-focus** of the brand block show **only** the `i-panel` expander on an opaque overlay that covers the slot exactly. Activating the block (click / `Enter` / `Space`) re-expands the rail, and the collapsed state persists.
 
 Both logos come from the approved per-theme asset pack bundled with this skill (asset rules in
 `assets.md`): the wide wordmark and the C2S short mark, each in a light and a dark variant. The only
@@ -303,14 +303,14 @@ swap them with the effective theme; the logo sits directly on the chrome at its 
 ```html
 <div class="rail-brand" role="button" tabindex="0" aria-label="Home">
   <!-- per-theme pairs; <BRAND_ASSETS_PATH> is the developer-confirmed asset location from
-       PROJECT-CONTEXT (ask if unrecorded — never choose it). The theme swap hides the off-theme variant. -->
+       PROJECT-CONTEXT (ask if unrecorded - never choose it). The theme swap hides the off-theme variant. -->
   <img class="rail-logo-wide logo-light"  src="<BRAND_ASSETS_PATH>/logo-full-light.png"  alt="CLaaS2SaaS" />
   <img class="rail-logo-wide logo-dark"   src="<BRAND_ASSETS_PATH>/logo-full-dark.png"   alt="CLaaS2SaaS" />
   <img class="rail-logo-short logo-light" src="<BRAND_ASSETS_PATH>/logo-short-light.png" alt="CLaaS2SaaS" />
   <img class="rail-logo-short logo-dark"  src="<BRAND_ASSETS_PATH>/logo-short-dark.png"  alt="CLaaS2SaaS" />
   <!-- Collapsed expander: the SAME i-panel icon, overlaid on the mark's slot on hover/focus. -->
   <span class="rail-expander" aria-hidden="true"><svg class="ic"><use href="#i-panel" /></svg></span>
-  <!-- Expanded collapse control: the ONE rail-toggle icon — i-panel; the same glyph appears on the
+  <!-- Expanded collapse control: the ONE rail-toggle icon - i-panel; the same glyph appears on the
        collapsed expander above. -->
   <button class="rail-collapse" aria-label="Collapse navigation" title="Collapse navigation">
     <svg class="ic" aria-hidden="true"><use href="#i-panel" /></svg>
@@ -322,16 +322,16 @@ swap them with the effective theme; the logo sits directly on the chrome at its 
 .rail-brand {
   position: relative;
   display: flex; align-items: center; justify-content: space-between;
-  gap: 8px; padding: 12px; min-height: 52px;   /* = top-bar height — the bottom dividers align */
+  gap: 8px; padding: 12px; min-height: 52px;   /* = top-bar height - the bottom dividers align */
   border-bottom: 1px solid var(--divider); cursor: pointer;
 }
-/* Wide logo (expanded): fixed HEIGHT, auto width — preserve the wordmark's aspect ratio (never crop or
+/* Wide logo (expanded): fixed HEIGHT, auto width - preserve the wordmark's aspect ratio (never crop or
    distort it, per assets.md). max-width bounds it inside the brand block; object-fit: contain letterboxes
    (never cover/crop) if ever clamped. */
 .rail-logo-wide  { height: 22px; width: auto; max-width: 100%; object-fit: contain; }
 .rail-logo-short { height: 24px; width: auto; }   /* expanded fallback; collapsed scope fixes the 40×34 slot */
 
-/* The ONE rail-toggle control (expanded state): carries the i-panel icon — the SAME icon appears on
+/* The ONE rail-toggle control (expanded state): carries the i-panel icon - the SAME icon appears on
    the collapsed expander below. */
 .rail-collapse {
   display: flex; align-items: center; justify-content: center;
@@ -342,7 +342,7 @@ swap them with the effective theme; the logo sits directly on the chrome at its 
 .rail-collapse:hover { background: var(--chrome-hover); color: var(--chrome-text); }
 .rail-collapse .ic { font-size: 18px; }   /* icon sized via font-size, per assets.md */
 
-/* Collapsed expander: the SAME i-panel icon on an opaque overlay. Invisible at rest —
+/* Collapsed expander: the SAME i-panel icon on an opaque overlay. Invisible at rest -
    visibility:hidden keeps it out of the tab order and lets it fade rather than hard-cut. */
 .rail-expander {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -355,23 +355,23 @@ swap them with the effective theme; the logo sits directly on the chrome at its 
 }
 .rail-expander .ic { font-size: 17px; }
 
-/* Collapsed (ENFORCED — overlay swap): the brand mark occupies a FIXED 40×34 slot. The short mark
-   and the expander share that exact slot and only cross-fade opacity — no surface-matching or sizing
+/* Collapsed (ENFORCED - overlay swap): the brand mark occupies a FIXED 40×34 slot. The short mark
+   and the expander share that exact slot and only cross-fade opacity - no surface-matching or sizing
    guesswork. No dim-and-keep, no glyph beside the mark, no reopen button. */
 .rail-container.collapsed .rail-brand { position: relative; justify-content: center; padding: 0; }   /* min-height keeps the head 52px */
 .rail-container.collapsed .rail-logo-wide,
 .rail-container.collapsed .rail-collapse { display: none; }   /* collapsed: the whole brand block is the expander */
 
-/* fixed slot for the short mark; the image letterboxes inside it — never cropped */
+/* fixed slot for the short mark; the image letterboxes inside it - never cropped */
 .rail-container.collapsed .rail-logo-short {
   display: block;
-  width: 40px; height: 34px;        /* fixed slot — the 40×34 collapsed mark slot */
-  object-fit: contain;              /* letterbox inside the slot — never cover/crop the logo */
+  width: 40px; height: 34px;        /* fixed slot - the 40×34 collapsed mark slot */
+  object-fit: contain;              /* letterbox inside the slot - never cover/crop the logo */
   border-radius: 8px;               /* matches the collapsed icon-square radius */
   transition: opacity 0.12s ease;
 }
 
-/* hidden, not dimmed — swap the short mark for the SAME i-panel expander on hover OR keyboard focus */
+/* hidden, not dimmed - swap the short mark for the SAME i-panel expander on hover OR keyboard focus */
 .rail-container.collapsed .rail-brand:hover .rail-logo-short,
 .rail-container.collapsed .rail-brand:focus-within .rail-logo-short { opacity: 0; }
 .rail-container.collapsed .rail-brand:hover .rail-expander,
@@ -418,10 +418,10 @@ are plain leaves stays an accordion). Tabs are terminal: a tab panel holds conte
 The structure below is the rule - roles and levels only:
 
 ```text
-Cluster  (fixed heading — not a level, just a title)
+Cluster  (fixed heading - not a level, just a title)
 └─ Group ............................. level 1   (accordion)
    └─ Group .......................... level 2   (accordion)
-      └─ Group ....................... level 3   (accordion — the limit)
+      └─ Group ....................... level 3   (accordion - the limit)
          ├─ Leaf                                 (link)
          ├─ Leaf  →  tab-strip page              (link that needs its own sub-areas)
          └─ Leaf                                 (link)
@@ -431,10 +431,10 @@ Build the real tree from the App Definition - different apps need different pane
 levels. A concrete illustration of the same structure (names are an **example only**):
 
 ```text
-System Administration     ← cluster heading — NOT a level (a fixed title)
+System Administration     ← cluster heading - NOT a level (a fixed title)
   Platform                ← group · level 1
     Security              ← group · level 2
-      Sign-in Methods     ← group · level 3   (the limit — deepest accordion)
+      Sign-in Methods     ← group · level 3   (the limit - deepest accordion)
         Password          ← leaf   (a leaf is NOT a level)
         SSO / SAML  ›     ← leaf that needs its own sub-areas → routable page with a TAB STRIP (tabs.md)
         Passkeys          ← leaf
@@ -483,7 +483,9 @@ System Administration     ← cluster heading — NOT a level (a fixed title)
 
 **Permission gating (ENFORCED):** items the user's roles cannot access render `null` - never disabled,
 never hidden-but-present. Omit before paint. (Distinct from **not-yet-built** destinations, which render
-disabled with a "Soon" pill - see Render only functional UI.)
+disabled with a "Soon" pill - see Render only functional UI. And distinct again from a granted feature
+with no route that nobody marked unbuilt: that is a defect, not a third rendering, and it is the one that
+leaves a heading above nothing.)
 
 ---
 
@@ -508,8 +510,8 @@ the `i-panel` expander in the same slot, and activating it (click / `Enter` / `S
 7. State persists to `localStorage` (`sidebarCollapsed`), restored on load.
 8. **Flicker-free (ENFORCED):** no flash, clip, wipe-in, pop, hard-cut, or vertical jump in **either** direction while the rail width animates. Use an **asymmetric delay**, not just clipping:
    - Hide expanded-only content (labels, chevrons, pills, wide logo, collapse control) by **opacity while it stays in flow** - never `position:absolute`/`width:0` (the out-of-flow snap *is* the flash and lets the icon shift).
-   - **Fade out fast, zero delay on collapse** (gone before the rail narrows enough to clip); **fade in only after the width nears completion on expand** - put `transition-delay ≈ width duration` on the **expanded-state** selector and `0` on the **collapsed-state** selector (a transition uses the timing of the state it goes *to*). Keep the expand delay just under the width duration - no blank "dead beat", no early wipe-in.
-   - Keep each icon at a **consistent inset** (don't re-center when collapsed; pick an inset that already centers the icon at the collapsed width, e.g. `margin-left + border + padding ≈ half the collapsed rail`).
+   - **Fade out fast, zero delay on collapse** (gone before the rail narrows enough to clip); **fade in only after the width nears completion on expand** - put `transition-delay ~ width duration` on the **expanded-state** selector and `0` on the **collapsed-state** selector (a transition uses the timing of the state it goes *to*). Keep the expand delay just under the width duration - no blank "dead beat", no early wipe-in.
+   - Keep each icon at a **consistent inset** (don't re-center when collapsed; pick an inset that already centers the icon at the collapsed width, e.g. `margin-left + border + padding ~ half the collapsed rail`).
    - Make the brand logos **absolute overlays** that cross-fade at fixed positions (no reserved box, so the collapsed rail stays centered and the mark never slides; a logo inside BOTH widths is never clipped, so it fades cleanly). The **collapse control** sits at the rail's edge, OUTSIDE the collapsed width: pinning it there lets the narrowing rail **clip it mid-fade** (abrupt cut), and edge-anchoring it with a fast fade makes it **jerk-slide**. Let it ride just *inside* the moving edge (never clipped) and fade with the **panel's own easing over a duration close to the width**, so it recedes/emerges *with* the rail.
    - Collapse vertical regions (filter, cluster labels, an open group body) with **`max-height`** (since `height: auto` can't transition) coupled to the width, so vertical reflow rides *with* the horizontal animation, not a t=0 snap.
    - Define any state-driven overlay (the collapsed expander) **unconditionally but invisible** so it **fades** instead of hard-cutting; drop hidden controls from the tab order with `visibility: hidden`/`disabled` (opacity alone leaves a focus stop); honor `prefers-reduced-motion` by making the change instant.
@@ -582,7 +584,8 @@ aspect-ratio breakpoints as needed. Prefer CSS for responsive layout over JS.
 - **Unbuilt nav destination** → render **disabled with a "Soon" pill** (`.nav-item.is-soon`), kept visible so the planned structure is legible.
 - **Unauthorized** (role-gated) item → render `null` (absent, never dimmed).
 - **Unbuilt non-nav control/panel** → omit the markup entirely; no dead DOM or hidden trigger.
-- A group with **zero visible children** must not render its header.
+- A group **or cluster** with **zero rendered children** must not render its header. Test the children that actually came out, never the features the user was granted.
+- Those three buckets are the whole set. A feature that is granted, resolves to no route, and carries no "Soon" marker belongs to none of them: it vanishes from the tree while its heading still counts it, so fix the feature or mark it unbuilt rather than inventing a fourth rendering.
 
 ---
 
@@ -624,7 +627,7 @@ aspect-ratio breakpoints as needed. Prefer CSS for responsive layout over JS.
 - ❌ Put the logo in the top bar, or the app name in the sidebar.
 - ❌ Use the warning token (or any status-role color) for the active-nav background.
 - ❌ Render controls/panels for non-functional **non-nav** features (omit them); don't omit unbuilt **nav** destinations (show "Soon").
-- ❌ Leave a group header with no visible children.
+- ❌ Leave a group or cluster header with no rendered children, or decide that emptiness from what was granted rather than from what rendered.
 - ❌ Move standing navigation to the top bar, or replace the sidebar with top tabs / hamburger (except mobile collapse). In-canvas content tabs (depth-overflow / record facets) are fine - see `tabs.md`.
 - ❌ Hide overlays with `visibility`/`opacity` - use `.d-none` (`display:none`).
 - ❌ Hardcode light-only colors that can't resolve under `[data-theme="dark"]`.

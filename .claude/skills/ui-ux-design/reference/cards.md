@@ -15,7 +15,7 @@ One enforced base shell plus principled variants by use case (content, KPI, enti
 
 ## Anatomy (base - ENFORCED)
 
-Every card is the same shell filling a subset of slots: **header** (title + icon/actions), **body**, optional **footer** (actions).
+Every card is the same shell filling a subset of slots: **header** (title, plus any actions), **body**, optional **footer** (actions). A card's actions are labeled buttons like any other action cluster - the icon plus its word ([buttons.md](buttons.md) §4.2).
 
 ```html
 <div class="card">
@@ -81,7 +81,7 @@ Label, large value, trend delta. Compact padding.
   <div class="kpi-label">Active Users</div>
   <div class="kpi-value">12,480</div>
   <div class="kpi-trend kpi-trend-up">▲ 8.2%</div>
-  <!-- optional: <div class="kpi-progress">…</div> -->
+  <!-- optional: <div class="kpi-progress">...</div> -->
 </div>
 ```
 
@@ -110,7 +110,15 @@ Represents a record (employee, course, contact): media + text + actions in a row
     <div class="entity-subtitle">Security Admin</div>
     <div class="entity-meta">Last active 2h ago</div>
   </div>
-  <div class="entity-actions"><!-- icon buttons --></div>
+  <div class="entity-actions">
+    <!-- A record's action cluster, so every action carries its word (buttons.md §4.2) -->
+    <a class="btn btn-secondary btn-sm" href="/people/jane-cooper">
+      <svg class="ic" aria-hidden="true"><use href="#i-eye" /></svg> View
+    </a>
+    <button type="button" class="btn btn-secondary btn-sm btn-text-danger" aria-label="Remove Jane Cooper">
+      <svg class="ic" aria-hidden="true"><use href="#i-trash" /></svg> Remove
+    </button>
+  </div>
 </div>
 ```
 

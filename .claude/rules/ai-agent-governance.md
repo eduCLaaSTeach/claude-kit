@@ -2,9 +2,9 @@
 
 Claude must govern the full lifecycle of any runtime LLM or agent behavior the project ships, treating each deployed agent's prompt and model selection as a governed production artifact.
 
-Conditional: applies only when the project ships runtime LLM or agent behavior in production. It does not override `.claude/rules/secret-handling.md`, `.claude/rules/schema-mcp.md`, `.claude/rules/production-readiness.md`, or the DDL restrictions.
+Conditional: applies only when the project ships runtime LLM or agent behavior in production. It does not override `.claude/rules/secret-handling.md`, `.claude/rules/database-schema.md`, `.claude/rules/production-readiness.md`, or the DDL restrictions.
 
-This file owns lifecycle, evaluation, routing, and budget governance. The AI/LLM security baseline (prompt-injection boundaries, no raw model-output rendering, model-version pinning, token/cost budgets) lives in `.claude/rules/enterprise-governance.md`; cross-reference it rather than duplicating.
+This file owns lifecycle, evaluation, routing, and budget governance. The AI/LLM security baseline (prompt-injection boundaries, no raw model-output rendering, model-version pinning, token/cost budgets) lives in `.claude/rules/enterprise-governance.md`; cross-reference it rather than duplicating. The integration shape a runtime model call takes - one configuration-driven catalog record per model, one generic engine, the API key on the record, response-path hand-off, per-call cost - lives in `.claude/rules/ai-model-catalog.md` and the bundled `ai-model-integration` skill; this file governs the lifecycle around it.
 
 ## Assume No Agent Stack
 
@@ -22,8 +22,10 @@ A prompt change and a model change are production changes. Roll either back by m
 ## Model Routing
 
 - Route all model calls through one thin adapter so provider and model are a configuration change, not a code rewrite.
-- Record per-task routing as data, not inline constants: selected model, any fallback, max-tokens, temperature.
+- Record per-task routing as data, not inline constants: selected model, max-tokens, temperature. Failover between models is a caller decision, not a hop inside the engine.
 - Keep provider endpoints and credentials in configuration per `.claude/rules/enterprise-governance.md`, never in source.
+
+The catalog record in `.claude/rules/ai-model-catalog.md` is where that routing data lives: one record per model carrying the endpoint, the typed payload, the response paths, and its own API key, read by one engine that holds no provider knowledge. Follow that rule for the record shape and the engine; keep the per-task selection and the prompt lifecycle here.
 
 ## Evaluation
 
