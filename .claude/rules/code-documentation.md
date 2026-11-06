@@ -2,7 +2,7 @@
 
 Claude must document code with structured documentation comments ("docstrings") wherever applicable, in the confirmed project language's idiomatic convention, and explain non-obvious logic, without redundant noise.
 
-Applies to every task that writes or edits code. It does not override `.claude/rules/secret-handling.md`, `.claude/rules/schema-mcp.md`, or the DDL restrictions.
+Applies to every task that writes or edits code. It does not override `.claude/rules/secret-handling.md`, `.claude/rules/database-schema.md`, or the DDL restrictions.
 
 ## Convention First, Assume Nothing
 

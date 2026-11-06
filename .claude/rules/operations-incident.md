@@ -2,7 +2,7 @@
 
 Claude must keep a production service observable, alertable, and recoverable, and follow a disciplined incident-response and rollback path whenever a change touches a running service.
 
-Conditional: applies only when the project runs a production service. It does not override `.claude/rules/secret-handling.md`, `.claude/rules/schema-mcp.md`, `.claude/rules/production-readiness.md`, or the DDL restrictions.
+Conditional: applies only when the project runs a production service. It does not override `.claude/rules/secret-handling.md`, `.claude/rules/database-schema.md`, `.claude/rules/production-readiness.md`, or the DDL restrictions.
 
 ## Assume No Operational Defaults
 
@@ -24,6 +24,24 @@ Conditional: applies only when the project runs a production service. It does no
 
 Treat anything that risks data loss or corruption at the highest severity even when the service still appears available. Availability and data integrity are separate failure dimensions.
 
+## AI Incidents
+
+Applies when the service ships runtime AI behavior, per `.claude/rules/ai-agent-governance.md`.
+
+Treat each of these as its own incident type, mapped to the confirmed severity taxonomy with its escalation path. The floors below follow from the data-at-risk rule above; the full mapping is a confirmed fact.
+
+| AI incident type | Treat at least as |
+| --- | --- |
+| A successful prompt injection | Major degradation. Data-at-risk when it reached data outside the user's scope or a tool with write access |
+| Data exposure through a model | Data-at-risk, the highest severity |
+| Harmful output reaching a user | Major degradation |
+| Runaway cost | Major degradation once the confirmed cost ceiling is breached |
+| A provider-side incident or a model retirement | By user impact. Production-down for a feature left with no working route and no fallback |
+
+- The first mitigation is the kill switch, per `.claude/rules/ai-guardrails.md`: turn the feature, or every AI feature, to its confirmed non-AI fallback, then diagnose. Moving a route to another record is a routing change, made only to a record whose eval set passed, per `.claude/rules/ai-model-catalog.md`.
+- Reproduce an AI incident from ids: the correlation id, the prompt version, the catalog record id, the retrieved document ids, and a keyed hash of the input, an HMAC whose key lives in the secret store, never a plain hash. Never from a raw prompt, which is never logged, per the logging rules in `.claude/rules/ai-agent-governance.md` and `.claude/rules/ai-model-catalog.md`. An id missing from the call's records makes the incident unreproducible, and that gap is an action item of its own.
+- Every AI incident gets an after-action review per Postmortem below, whatever its severity. A successful attack becomes a case in the eval attack corpus, per `.claude/rules/ai-agent-governance.md`.
+
 ## Runbooks
 
 - Author a runbook per top failure mode, covering the detection signal, immediate mitigation, diagnosis steps, rollback path, and communications expectation.
@@ -36,9 +54,10 @@ Treat rollback as distinct classes; the right one depends on what changed.
 | Rollback class | What it reverts | How it is performed |
 | --- | --- | --- |
 | Application rollback | A code/runtime regression | Redeploy the prior known-good revision |
-| Schema rollback | A schema change | Apply the paired down-migration; see `.claude/rules/schema-mcp.md` |
+| Schema rollback | A schema change | Apply the paired down-migration; see `.claude/rules/database-schema.md` |
 | Behavior / flag rollback | A behavior change behind a flag or release | Flip the flag off or revert to the prior released version |
 
+- For an AI feature, the kill switch is the behavior rollback, and a route moved back to its previous record is the model rollback. Neither needs a deployment.
 - Choose the class that matches the change. A code redeploy does not undo a schema change, and flipping a flag does not undo a deployed revision.
 - Confirm the actual rollback mechanism and known-good reference for each class with the developer; do not assume a deployment or migration model (see `.claude/rules/deployment.md`).
 
@@ -49,6 +68,6 @@ Treat rollback as distinct classes; the right one depends on what changed.
 
 ## Final Reporting
 
-For operations/incident work, report: which service-level objectives, alerts, and golden signals were defined or changed, and where their targets came from; the severity taxonomy, response-time expectations, and escalation path touched; which runbooks were authored/updated and the failure modes they cover; the rollback class(es) prepared and the known-good reference for each; for any incident, the postmortem status and tracked action-item tickets.
+For operations/incident work, report: which service-level objectives, alerts, and golden signals were defined or changed, and where their targets came from; the severity taxonomy, response-time expectations, and escalation path touched; the AI incident types mapped, the kill switch used as the first mitigation, and the ids an AI incident is reproduced from; which runbooks were authored/updated and the failure modes they cover; the rollback class(es) prepared and the known-good reference for each; for any incident, the postmortem status and tracked action-item tickets.
 
 Final rule: if a service-level objective, alert threshold, severity-response time, on-call rota, named failure mode, or rollback mechanism is unclear, do not guess. Ask and record the confirmed values first.

@@ -18,7 +18,7 @@ Do not ask for permission to log and do not announce it as a question. Capture i
 
 ## Capture The Developer Identity
 
-Record who the developer was, from non-secret sources already available: `git config user.name` and `git config user.email`; the OS username when readily available (`$env:USERNAME`, or `whoami`). The developer's own name and email are attribution, not customer PII, and are allowed. If no identity is resolvable, record "unknown" rather than guessing.
+Record who the developer was, from non-secret sources already available. Use the session's EOD developer first when one has been given, per `.claude/rules/eod-reporting.md`, since they said who they are. Otherwise fall back to `git config user.name` and `git config user.email`, or the OS username when readily available (`$env:USERNAME`, or `whoami`). The developer's own name and email are attribution, not customer PII, and are allowed. Treat the fallbacks as weak: on a shared plan or a shared machine setup they can name the team rather than the person, so record what they resolved to without asserting it is the developer. If no identity is resolvable, record "unknown" rather than guessing.
 
 ## What To Capture
 

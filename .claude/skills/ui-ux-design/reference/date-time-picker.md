@@ -48,7 +48,7 @@ Every mode is one or more native inputs with a label; the browser renders the ca
 - **Field** (`.dp-native`): native control (value text + browser calendar indicator).
 - **Label** (`.dp-label`): visible label above the field (or `aria-label` when space-constrained).
 - **Range** (`.dp-range`): two `.dp-native` date inputs (Start / End) with a "to" separator, linked in JS so each bounds the other.
-- **Presets** (`.dp-presets`): pill buttons that populate the range (see 3).
+- **Presets** (`.dp-presets`): a row of `btn btn-secondary btn-sm` controls that populate the range (see 3).
 
 ---
 
@@ -59,7 +59,7 @@ All four use the native control styled with `.dp-native`.
 - **Single** (`single`) - `<input type="date" class="dp-native">`. One day; submitted value is ISO (`YYYY-MM-DD`). The default.
 - **Date + time** (`datetime`) - `<input type="datetime-local" class="dp-native">`. Day plus time in one control (submitted `YYYY-MM-DDTHH:MM`). Use for any field capturing date and time together.
 - **Range** (`range`) - two `type="date"` inputs in a `.dp-range` row (Start / End). No native range picker exists, so link them in JS: selecting Start sets End's `min`; selecting End sets Start's `max`. Emit `{ start, end }` (ISO or null).
-- **Quick presets** (`.dp-presets`) - pill buttons Today / Last 7 days / This month that fill the two range inputs and fire `change`. Use when the picker filters a list (e.g. audit logs).
+- **Quick presets** (`.dp-presets`) - Today / Last 7 days / This month, each the shared neutral secondary button at the small size (`btn btn-secondary btn-sm`, [buttons.md](buttons.md) §4), filling the two range inputs and firing `change`. They are labeled actions that only change what is on screen, so none of them is solid and the row defines no button style of its own. Use when the picker filters a list (e.g. audit logs).
 
 **ENFORCED (render-only-functional-UI):** never render a preset or mode field whose behaviour isn't wired. An unused preset is omitted, not shown disabled.
 
@@ -115,17 +115,8 @@ Mobile-first: small screens first, then wider layouts via width and/or aspect-ra
 
 /* ===== Presets (3) ===== */
 .dp-presets { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); margin-top: var(--spacing-sm); }
-.dp-preset {
-    border: 1px solid var(--dp-border);
-    background: var(--color-surface);
-    border-radius: 999px;
-    padding: 5px 12px;
-    font-family: inherit;
-    font-size: var(--text-small);
-    color: var(--color-text);
-    cursor: pointer;
-}
-.dp-preset:hover { border-color: var(--color-primary); color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 6%, transparent); }
+/* No .dp-preset rule: each preset IS the shared .btn .btn-secondary .btn-sm from buttons.md §10.
+   A preset row lays the controls out and never defines a second button look. */
 
 /* ===== Responsive - mobile-first (6): base above stacks; wider screens constrain width and row the range ===== */
 @media (min-width: 600px) {

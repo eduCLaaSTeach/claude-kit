@@ -13,8 +13,9 @@ Check:
 - provider/manual/CI/CD deployment steps
 - runtime and build availability
 - environment variable placeholders
-- database migration or Schema MCP impact
+- database migration impact
 - validation evidence
+- production secure coding settings: debug output off, the confirmed security headers and upload limit in place, and the security audit trail granted no update or delete, or reported as append-only by convention, per `.claude/rules/secure-coding.md`
 - rollback and post-deploy verification
 
 Return a go/no-go checklist. Do not deploy without explicit approval.

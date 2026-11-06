@@ -14,7 +14,7 @@ Define each token below in the project's own styling system (CSS custom properti
 | semantic.warning | Sunray | `#E9AC53` |
 | semantic.danger | Violet-Red | `#991547` |
 | semantic.info | Jelly Bean Blue | `#448E9D` |
-| Secondary (buttons) | Cadmium Violet | `#7F3F98` |
+| Secondary (badges, chips, non-interactive accents - **not** a button fill; see `buttons.md` §4) | Cadmium Violet | `#7F3F98` |
 | Neutral family | Platinum Beige + White | `#EEE7E0` ramp, `#FFFFFF` |
 
 Never repurpose a role's color and never introduce an off-palette hue; a genuinely new tint derives from an approved hue and must keep the WCAG AA bar (all pairs below are verified: body text well above 4.5:1, indicators at least 3:1).
@@ -59,6 +59,22 @@ Semantic colors used as text, icons, or thin edges on a surface always go throug
 
 "n% X" means mix the brand color at that percentage into the theme's card surface (sRGB blend, e.g. CSS `color-mix(in srgb, <brand> n%, <card>)`).
 
+## Fill, overlay, and effect tokens
+
+Values the components need beyond the core surfaces. Name them as tokens like every other value; a component never writes one as a literal.
+
+| Token | Light | Dark | Used for |
+| --- | --- | --- | --- |
+| `--on-fill` | `#FFFFFF` | `#FFFFFF` | Text and icons on a solid brand or status fill (danger button, avatar initials, tooltip, completed step number) |
+| `--selection-bg` | `rgba(179, 161, 37, 0.35)` | same | Text selection highlight |
+| `--profile-cover-gradient` | `linear-gradient(120deg, #35619B 0%, #448E9D 52%, #B3A125 100%)` | same | Profile page cover band |
+| `--chip-primary-fg` | not set, the chip uses the primary color | `#96BAE9` | Primary chip label in dark |
+| `--tab-hover-bg` | `rgba(25, 62, 107, 0.13)` | `rgba(255, 255, 255, 0.16)` | Hover fill on an inactive tab |
+| `--skel-shimmer` | `rgba(255, 255, 255, 0.25)` | `rgba(255, 255, 255, 0.08)` | The highlight band of the skeleton shimmer |
+| `--modal-backdrop` | `rgba(12, 18, 30, 0.55)` | same | Modal backdrop |
+| `--drawer-backdrop` | `rgba(0, 0, 0, 0.45)` | same | Off-canvas navigation drawer backdrop |
+| `--solution-icon` | `#193E6B` | `#B3A125` | Solution and module icons, the only color an icon takes (`solution-icons.md`) |
+
 ## Type, shape, elevation, motion
 
 | Aspect | Fixed value |
@@ -71,7 +87,8 @@ Semantic colors used as text, icons, or thin edges on a surface always go throug
 | Resting elevation | Cards are FLAT: 1px card border, no resting shadow |
 | Hover / overlay elevation | md `0 2px 8px rgba(25,40,65,0.08)` light / `0 3px 10px rgba(0,0,0,0.30)` dark; lg (popovers, modals, toasts) `0 8px 24px rgba(15,25,45,0.14)` light / `0 10px 28px rgba(0,0,0,0.45)` dark |
 | Chrome edge shadow | rail `2px 0 10px <chrome-edge>`, top bar `0 2px 10px <chrome-edge>` (lifts the chrome off the canvas) |
-| Focus ring | `2px solid <accent>`, `outline-offset: 2px`, on every interactive element |
+| Focus ring | `2px solid <accent>`, `outline-offset: 2px`, on every interactive element, except inside a container that clips or joins its parts (a segmented control, a tab strip), where it is inset, `outline-offset: -4px`, so it is never clipped and never crosses a neighbouring control; on a segment filled with the accent the ring takes the accent contrast color |
+| Scroll padding | every scroll container keeps `scroll-padding` of `8px` on each edge it scrolls along, more than the outside ring's 4px reach, plus the size of each sticky region on that edge (a sticky header, a pinned column), so a focused control is never clipped or hidden |
 | Rail animation | width `0.28s cubic-bezier(0.4, 0, 0.2, 1)`; honor `prefers-reduced-motion` (instant) |
 
 ## Shell dimensions
@@ -80,7 +97,7 @@ Semantic colors used as text, icons, or thin edges on a surface always go throug
 | --- | --- |
 | Top bar and rail head height | 52px (their bottom dividers form one continuous line) |
 | Sidebar width | 240px expanded / 56px collapsed |
-| Controls | buttons and inputs 32px tall (small 27px), top-bar icon buttons 34px, avatar 30px |
+| Controls | buttons and inputs 32px tall (small 27px), top-bar icon buttons 34px, avatar 30px; a button and the field beside it share one height and one border token, and every button at a given size shares one geometry (`buttons.md` §4) |
 | Wide logo | `height: 22px; width: auto` in the rail head |
 | C2S short mark | 40x34 slot, `object-fit: contain`, centered in the collapsed rail |
 | Scrollbars | the sidebar nav list and the main canvas hide scrollbars visually (`scrollbar-width: none` + hidden webkit scrollbar) while staying fully scrollable |
