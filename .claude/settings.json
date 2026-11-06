@@ -1,14 +1,19 @@
 {
     "permissions": {
+        "defaultMode": "default",
         "deny": [
             "Bash(rm -rf /)",
-            "Bash(rm -rf ~)",
-            "Write(doc/tasktracking/task-events.jsonl)",
-            "Edit(doc/tasktracking/task-events.jsonl)"
+            "Bash(rm -rf ~)"
         ],
         "ask": [
             "Bash(claude mcp add*)",
-            "Bash(claude mcp remove*)"
+            "Bash(claude mcp remove*)",
+            "Bash(*login*)",
+            "Bash(*token*)",
+            "Bash(*install*)",
+            "Bash(*deploy*)",
+            "Bash(*publish*)",
+            "Bash(*migrate*)"
         ],
         "allow": [
             "Read",
@@ -16,20 +21,6 @@
             "Grep",
             "Write(.claude/feedback-logs/**)",
             "Edit(.claude/feedback-logs/**)",
-            "Write(doc/eod/**)",
-            "Edit(doc/eod/**)",
-            "Write(doc/phasedocument/**)",
-            "Edit(doc/phasedocument/**)",
-            "Write(doc/tasktracking/**)",
-            "Edit(doc/tasktracking/**)",
-            "Write(doc/corerepo/**)",
-            "Edit(doc/corerepo/**)",
-            "Write(doc/orientation-map.html)",
-            "Edit(doc/orientation-map.html)",
-            "Bash(scripts/task-event.sh *)",
-            "Bash(./scripts/task-event.sh *)",
-            "Bash(sh scripts/task-event.sh *)",
-            "Bash(bash scripts/task-event.sh *)",
             "Bash(claude --version)",
             "Bash(claude mcp list*)",
             "Bash(git)",
@@ -47,7 +38,5 @@
         ]
     },
     "enableAllProjectMcpServers": true,
-    "enabledMcpjsonServers": [
-        "schema"
-    ]
+    "enabledMcpjsonServers": ["schema"]
 }
